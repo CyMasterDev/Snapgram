@@ -1,4 +1,4 @@
-import React from 'react'
+import { ReactNode } from 'react'
 
 export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
   return (
