@@ -19,10 +19,10 @@ const SignupForm = () => {
   const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
   const navigate = useNavigate();
 
-  const { mutateAsync: createUserAccount, isLoading:
+  const { mutateAsync: createUserAccount, isPending:
   isCreatingAccount } = useCreateUserAccount();
 
-  const { mutateAsync: signInAccount, isLoading: isSigningIn } = 
+  const { mutateAsync: signInAccount, isPending: isSigningIn } = 
   useSignInAccount();
 
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -40,7 +40,7 @@ const SignupForm = () => {
 
     if(!newUser) {
       return toast({
-        title: "Sorry, we weren't able to sign you up. Try again later."})
+        title: "Sorry, we weren't able to sign you up", description: "Try again later."})
     }
 
     const session = await signInAccount({
@@ -49,7 +49,7 @@ const SignupForm = () => {
     })
 
     if(!session) {
-      return toast({ title: "Sorry, we weren't able to sign you in. Try again later."})
+      return toast({ title: "Sorry, we weren't able to sign you in", description: "Try again later."})
     }
 
     const isLoggedIn = await checkAuthUser();
@@ -59,7 +59,7 @@ const SignupForm = () => {
 
       navigate('/')
     } else {
-      return toast({ title: "Sorry, we weren't able to sign you up. Try again later."})
+      return toast({ title: "Sorry, we weren't able to sign you up", description: "Try again later."})
     }
   }
 
@@ -129,12 +129,12 @@ const SignupForm = () => {
               <div className="flex-center gap-2">
                 <Spinner /> Loading...
               </div>
-            ) : "Sign Up"}
+            ) : "Sign up"}
           </Button>
 
           <p className="text-small-regular text-light-2 text-center mt-2">
             Already have an account?
-            <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">Log in</Link>
+            <Link to="/sign-in" className="text-primary-500 text-small-semibold ml-1">Sign in</Link>
           </p>
         </form>
       </div>
