@@ -1,4 +1,4 @@
-# Social Media App Using: React + TypeScript + Vite + Appwrite Cloud + React Query/Tanstack
+# Social Media App Using: React + TypeScript + Vite + Appwrite Cloud + React Query/Tanstack + Shadcn UI
 
 (Currently under development, not completed)
 
