@@ -11,11 +11,16 @@ import { useForm } from "react-hook-form"
 import { SignupValidation } from "@/lib/validation"
 import { z } from "zod"
 import Spinner from "@/components/shared/spinner"
-import { createUserAccount } from "@/lib/appwrite/api"
+import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations"
 
 const SignupForm = () => {
   const { toast } = useToast()
-  const isLoading = false;
+
+  const { mutateAsync: createUserAccount, isLoading:
+  isCreatingAccount } = useCreateUserAccount();
+
+  const { mutateAsync: signInAccount, isLoading: isSigningIn } = 
+  useSignInAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
@@ -28,20 +33,25 @@ const SignupForm = () => {
     },
   })
 
-  const { mutateAsync: createUserAccount, isLoading:
-    isCreatingAccount } = useCreateUserAccountMutation
-
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
 
     if(!newUser) {
       return toast({
-        title: "Sorry, we weren't able to sign you up. Try again later.",
-    })
-    
-    //const session = await signInAccount()
+        title: "Sorry, we weren't able to sign you up. Try again later."})
     }
+
+    const session = await signInAccount({
+      email: values.email,
+      password: values.password,
+    })
+
+    if(!session) {
+      return toast({ title: "Sorry, we weren't able to sign you in. Try again later."})
+    }
+
+    
   }
 
   return (
@@ -106,7 +116,7 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isLoading ? (
+            {isCreatingUser ? (
               <div className="flex-center gap-2">
                 <Spinner /> Loading...
               </div>
