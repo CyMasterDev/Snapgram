@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 import { useToast } from "@/hooks/use-toast"
 
@@ -12,9 +12,12 @@ import { SignupValidation } from "@/lib/validation"
 import { z } from "zod"
 import Spinner from "@/components/shared/spinner"
 import { useCreateUserAccount, useSignInAccount } from "@/lib/react-query/queriesAndMutations"
+import { useUserContext } from "@/context/AuthContext"
 
 const SignupForm = () => {
   const { toast } = useToast()
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
 
   const { mutateAsync: createUserAccount, isLoading:
   isCreatingAccount } = useCreateUserAccount();
@@ -22,7 +25,6 @@ const SignupForm = () => {
   const { mutateAsync: signInAccount, isLoading: isSigningIn } = 
   useSignInAccount();
 
-  // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({
     resolver: zodResolver(SignupValidation),
     defaultValues: {
@@ -33,7 +35,6 @@ const SignupForm = () => {
     },
   })
 
-  // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof SignupValidation>) {
     const newUser = await createUserAccount(values);
 
@@ -51,7 +52,15 @@ const SignupForm = () => {
       return toast({ title: "Sorry, we weren't able to sign you in. Try again later."})
     }
 
-    
+    const isLoggedIn = await checkAuthUser();
+
+    if(isLoggedIn) {
+      form.reset();
+
+      navigate('/')
+    } else {
+      return toast({ title: "Sorry, we weren't able to sign you up. Try again later."})
+    }
   }
 
   return (
@@ -116,7 +125,7 @@ const SignupForm = () => {
             )}
           />
           <Button type="submit" className="shad-button_primary">
-            {isCreatingUser ? (
+            {isCreatingAccount ? (
               <div className="flex-center gap-2">
                 <Spinner /> Loading...
               </div>
