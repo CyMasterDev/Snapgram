@@ -3,10 +3,12 @@ import { useEffect } from 'react';
 
 import { Button } from '../ui/button'
 import { useSignOutAccount } from '@/lib/react-query/queriesAndMutations'
+import { useUserContext } from '@/context/AuthContext';
 
 const Topbar = () => {
   const { mutate: signOut, isSuccess } = useSignOutAccount();
   const navigate = useNavigate();
+  const user = useUserContext();
 
   useEffect(() => {
     if (isSuccess) navigate(0);
@@ -36,6 +38,8 @@ const Topbar = () => {
               />
           </Button>
         </div>
+        <Link to={`/profile`}>
+        </Link>
       </div>
     </section>
   )
