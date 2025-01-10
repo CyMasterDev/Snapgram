@@ -161,7 +161,7 @@
   }
 
   .post_details-info {
-    @apply bg-dark-2 flex flex-col gap-5 lg:gap-7 flex-1 items-start p-8 rounded-[30px];
+    @apply bg-dark-2 flex flex-col gap-5 lg:gap-7 flex-1 items-start p-4 lg:p-8 rounded-[30px];
   }
 
   .post_details-delete_btn {
@@ -174,7 +174,7 @@
   }
 
   .profile-inner_container {
-    @apply flex items-center md:mb-8 xl:items-start gap-8 flex-col xl:flex-row relative max-w-5xl w-full;
+    @apply flex items-center md:mb-8 gap-8 flex-col relative max-w-5xl w-full;
   }
 
   .profile-tab {
@@ -232,12 +232,12 @@
   }
 
   .post-card_img {
-    @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[24px] object-cover mb-5;
+    @apply h-64 xs:h-[400px] lg:h-[450px] w-full rounded-[24px] object-cover mt-5;
   }
 
   /* Topbar */
   .topbar {
-    @apply sticky top-0 z-50 md:hidden bg-dark-2 w-full;
+    @apply sticky top-0 z-50 bg-dark-2 w-full md:hidden;
   }
 
   /* User card */
@@ -271,7 +271,7 @@
   }
 
   .shad-button_dark_4 {
-    @apply h-12 bg-dark-4 px-5 text-light-1 flex gap-2 !important;
+    @apply bg-dark-4 px-5 text-light-1 flex gap-2 !important;
   }
 
   .shad-button_ghost {
