@@ -55,9 +55,8 @@ const Sidebar = () => {
 
             return (
               <li key={link.label}
-              className={`leftsidebar-link group ${
-                isActive && 'bg-primary-500'
-              }`}>
+                className={`leftsidebar-link group ${isActive && 'bg-primary-500'
+                  }`}>
                 <NavLink
                   to={link.route}
                   className='flex gap-4 items-center p-4'
@@ -67,9 +66,8 @@ const Sidebar = () => {
                     alt={link.label}
                     draggable="false"
                     className=
-                    {`group-hover:invert-white select-none ${
-                      isActive && 'invert-white'
-                    }`}
+                    {`group-hover:invert-white select-none ${isActive && 'invert-white'
+                      }`}
                   />
                   {link.label}
                 </NavLink>
@@ -78,6 +76,16 @@ const Sidebar = () => {
           })}
         </ul>
       </div>
+
+      <Button variant='ghost' className='shad-button_ghost' onClick={() => signOut()}>
+        <img
+          src='/assets/icons/logout.svg'
+          alt='sign out'
+          draggable="false"
+          className="select-none"
+        />
+        <p className='small-medium lg:base-medium'>Sign Out</p>
+      </Button>
     </nav>
   )
 }

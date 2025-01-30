@@ -21,8 +21,8 @@
     },
     {
         imgURL: "/assets/icons/gallery-add.svg",
-        route: "/new-post",
-        label: "New Post",
+        route: "/create-post",
+        label: "Create Post",
     },
 ];
 
@@ -44,7 +44,7 @@ export const bottombarLinks = [
     },
     {
         imgURL: "/assets/icons/gallery-add.svg",
-        route: "/new-post",
-        label: "New Post",
+        route: "/create-post",
+        label: "Create Post",
     },
 ];

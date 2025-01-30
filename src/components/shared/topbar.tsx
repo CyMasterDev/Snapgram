@@ -31,7 +31,7 @@ const Topbar = () => {
             <Button variant='ghost' className='shad-button_ghost' onClick={() => signOut()}>
               <img
                 src='/assets/icons/logout.svg'
-                alt='logout'
+                alt='sign out'
                 draggable="false"
                 className="select-none"
               />
