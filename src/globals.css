@@ -237,7 +237,7 @@
 
   /* Topbar */
   .topbar {
-    @apply sticky top-0 z-50 bg-dark-2 w-full md:hidden;
+    @apply sticky top-0 z-50 bg-dark-3 w-full md:hidden;
   }
 
   /* User card */
