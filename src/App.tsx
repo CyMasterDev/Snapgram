@@ -24,6 +24,11 @@ const App = () => {
           <Route path='/explore' element={<Explore />} />
           <Route path='/saved' element={<Saved />} />
           <Route path='/all-users' element={<AllUsers />} />
+          <Route path='/create-post' element={<CreatePost />} />
+          <Route path='/edit-post/:id' element={<EditPost />} />
+          <Route path='/posts/:id' element={<PostDetails />} />
+          <Route path='/profile/:id/*' element={<Profile />} />
+          <Route path='/edit-profile/:id' element={<EditProfile />} />
         </Route>
       </Routes>
 
