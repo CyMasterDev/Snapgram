@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "../ui/textarea"
+import FileUploader from "../shared/FileUploader"
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -59,13 +60,62 @@ export const PostForm = () => {
             <FormItem>
               <FormLabel className="shad-form_label">Add Images</FormLabel>
               <FormControl>
-                <FileUploader/>
+                <FileUploader />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label">Add Location</FormLabel>
+              <FormControl>
+                <Input type="text" className="shad-input" />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="tags"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="shad-form_label flex-start gap-1">
+                Add Tags
+                <p className="small-regular text-light-3">
+                  (separated by commas ",")
+                </p>
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  className="shad-input"
+                  placeholder="design, tech, lifestyle, music, art, culture, travel, food, fitness"
+                />
+              </FormControl>
+              <FormMessage className="shad-form_message" />
+            </FormItem>
+          )}
+        />
+        <div className="flex gap-4 items-center justify-end">
+          <Button
+            type="button"
+            className="shad-button_dark_4"
+          >
+            Cancel
+          </Button>
+
+          <Button
+            type="submit"
+            className="shad-button_primary whitespace-nowrap"
+          >
+            Post
+          </Button>
+        </div>
       </form>
     </Form>
   )
