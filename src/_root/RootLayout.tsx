@@ -1,12 +1,12 @@
-import Bottombar from '@/components/shared/bottombar'
-import Topbar from '@/components/shared/topbar'
-import Sidebar from '@/components/shared/sidebar'
+import Bottombar from '@/components/shared/Bottombar'
+import Topbar from '@/components/shared/Topbar'
+import Sidebar from '@/components/shared/Sidebar'
 
 import { Outlet } from 'react-router-dom'
 
 const RootLayout = () => {
   return (
-    <div className='w-full md:flex'>
+    <div className='w-full md:flex select-none'>
       <Topbar />
       <Sidebar />
 

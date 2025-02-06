@@ -90,21 +90,24 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 3px;
+    cursor: default;
+    width: 7.5px;
     height: 3px;
-    border-radius: 2px;
+    border-radius: 5px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: #09090a;
+    background: transparent;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
+    cursor: default;
     background: #5c5c7b;
     border-radius: 50px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    cursor: default;
     background: #7878a3;
   }
 
@@ -223,7 +226,7 @@
   }
 
   .leftsidebar-link {
-    @apply rounded-lg base-medium hover:bg-primary-500 transition;
+    @apply rounded-2xl base-medium hover:bg-primary-500 transition;
   }
 
   /* Post Card */
@@ -263,6 +266,7 @@
 
   .shad-textarea {
     @apply h-36 bg-dark-3 rounded-xl border-none focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+    resize: none;
   }
 
   /* Button */

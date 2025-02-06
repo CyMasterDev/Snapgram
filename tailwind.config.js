@@ -60,6 +60,9 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      custom_scrollbar: {
+        width: "50px", // Default width of scrollbar
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import { useForm } from "react-hook-form"
 import { SigninValidation } from "@/lib/validation"
 import { z } from "zod"
-import Spinner from "@/components/shared/spinner"
+import Spinner from "@/components/shared/Spinner"
 import { useSignInAccount } from "@/lib/react-query/queriesAndMutations"
 import { useUserContext } from "@/context/AuthContext"
 
