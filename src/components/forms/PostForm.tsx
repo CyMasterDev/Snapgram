@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,26 +14,20 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "../ui/textarea"
 import FileUploader from "../shared/FileUploader"
+import { PostValidation } from "@/lib/validation"
 
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
-  }),
-})
-
-export const PostForm = () => {
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export const PostForm = ({ post }) => {
+  const form = useForm<z.infer<typeof PostValidation>>({
+    resolver: zodResolver(PostValidation),
     defaultValues: {
-      username: "",
+      caption: post ? post?.caption : "",
+      file: [],
+      location: post ? post?.location : "",
+      tags: post? post?.tags.join(",") : "",
     },
   })
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  function onSubmit(values: z.infer<typeof PostValidation>) {
     console.log(values)
   }
   return (
@@ -45,7 +38,7 @@ export const PostForm = () => {
           name="caption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="shad-form_label">Caption</FormLabel>
+              <FormLabel className="shad-form_label">Add Caption</FormLabel>
               <FormControl>
                 <Textarea className="shad-textarea custom-scrollbar" {...field} />
               </FormControl>
@@ -60,7 +53,10 @@ export const PostForm = () => {
             <FormItem>
               <FormLabel className="shad-form_label">Add Images</FormLabel>
               <FormControl>
-                <FileUploader />
+                <FileUploader
+                  fieldChange={field.onChange}
+                  mediaUrl={post?.imageUrl}
+                />
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -73,7 +69,7 @@ export const PostForm = () => {
             <FormItem>
               <FormLabel className="shad-form_label">Add Location</FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" />
+                <Input type="text" className="shad-input" {...field}/>
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -87,7 +83,7 @@ export const PostForm = () => {
               <FormLabel className="shad-form_label flex-start gap-1">
                 Add Tags
                 <p className="small-regular text-light-3">
-                  (separated by commas ",")
+                  separated by commas ","
                 </p>
               </FormLabel>
               <FormControl>
@@ -95,6 +91,7 @@ export const PostForm = () => {
                   type="text"
                   className="shad-input"
                   placeholder="design, tech, lifestyle, music, art, culture, travel, food, fitness"
+                  {...field}
                 />
               </FormControl>
               <FormMessage className="shad-form_message" />
