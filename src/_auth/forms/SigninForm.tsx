@@ -38,8 +38,8 @@ const SigninForm = () => {
 
     if(!session) {
       return toast({
-        title: "Sorry, we weren't able to sign you in",
-        description: "Maybe you mistyped your email or password?",
+        title: "Whoops! Something went wrong while signing in",
+        description: "Your session is missing or expired, please try again later.",
         variant: "destructive"
       })
     }
@@ -52,8 +52,8 @@ const SigninForm = () => {
       navigate('/')
     } else {
       return toast({
-        title: "Sorry, we weren't able to sign you in",
-        description: "Maybe you mistyped your email or password?",
+        title: "Whoops! Something went wrong while signing in",
+        description: "Navigation failed. Something went wrong, please try again later.",
         variant: "destructive"
       })
     }
