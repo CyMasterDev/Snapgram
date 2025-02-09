@@ -33,8 +33,8 @@ export const SignupValidation = z.object({
 
 
 export const SigninValidation = z.object({
-  email: z.string().email().min(1, { message: "Please enter your email." }),
-  password: z.string().min(1, { message: "Please enter your password." }),
+  email: z.string().email().min(1, { message: "Please enter your email" }),
+  password: z.string().min(1, { message: "Please enter your password" }),
 });
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
