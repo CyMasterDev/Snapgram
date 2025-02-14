@@ -13,6 +13,7 @@ import FileUploader from "../shared/FileUploader"
 import { Models } from "appwrite"
 import { useUserContext } from "@/context/AuthContext"
 import { toast } from "@/hooks/use-toast"
+import { useCreatePost } from "@/lib/react-query/queriesAndMutations"
 
 type PostFormProps = {
   post?: Models.Document;
