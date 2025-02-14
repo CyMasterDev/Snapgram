@@ -1,5 +1,4 @@
-import { useUserContext } from "@/context/AuthContext";
-import { useDeleteSavedPost, useLikePost, useSavePost } from "@/lib/react-query/queriesAndMutations";
+import { useDeleteSavedPost, useGetCurrentUser, useLikePost, useSavePost } from "@/lib/react-query/queriesAndMutations";
 import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite"
 import React, { useState, useEffect } from "react";
@@ -19,7 +18,7 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
     const { mutate: savePost } = useSavePost();
     const { mutate: deleteSavedPost } = useDeleteSavedPost();
 
-    const { data: currentUser } = useUserContext();
+    const { data: currentUser } = useGetCurrentUser();
 
     const handleLikePost = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -45,11 +44,11 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
 
         if(savedPostRecord) {
             setIsSaved(false);
-            deleteSavedPost(savedPostRecord.$id)
+            deleteSavedPost(savedPostRecord.$id);
+        } else {
+            savePost({ postId: post.$id, userId });
+            setIsSaved(true);
         }
-
-        savePost({ postId: post.$id, userId });
-        setIsSaved(true);
     }
 
     return (
@@ -66,7 +65,7 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
                 />
                 <p className="small-medium lg:base-medium">{likes.length}</p>
             </div>
-            <div className="flex gap-2 mr-10">
+            <div className="flex gap-2 mr-5 ml-5">
                 <img
                 src="/assets/icons/chat.svg"
                 draggable="false"
@@ -78,7 +77,7 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
                 />
                 <p className="small-medium lg:base-medium">0</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 ml-5">
                 <img
                 src={isSaved ? "/assets/icons/saved.svg" : "assets/icons/save.svg"}
                 draggable="false"

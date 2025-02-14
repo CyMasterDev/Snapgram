@@ -70,9 +70,9 @@ const PostCard = ({ post }: PostCardProps) => {
                     className="select-none post-card_img"
                     alt="post-image"
                 />
-
-                <PostStatistics post={post} userId={user.id}/>
             </Link>
+
+            <PostStatistics post={post} userId={user.id} />
         </div>
     )
 }
