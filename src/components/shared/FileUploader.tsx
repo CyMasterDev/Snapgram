@@ -12,7 +12,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
     const [file, setFile] = useState<File[]>([]);
-    const [fileUrl, setFileUrl] = useState("");
+    const [fileUrl, setFileUrl] = useState(mediaUrl);
     const [errorMessage, setErrorMessage] = useState("");
 
     const onDrop = useCallback(
@@ -22,15 +22,22 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                 if (rejection.errors[0].code === "file-too-large") {
                     setErrorMessage("File size must be under 5MB");
                 } else if (rejection.errors[0].code === "file-invalid-type") {
-                    setErrorMessage("Unsupported file type, please upload a valid image file (SVG, PNG, JPG, JPEG)");
+                    setErrorMessage("Unsupported file type, please upload a valid image file (PNG, JPG, JPEG)");
                 }
                 return;
             }
 
+            // Additional filter to prevent SVG files
+            const filteredFiles = acceptedFiles.filter(file => !file.name.toLowerCase().endsWith(".svg"));
+            if (filteredFiles.length !== acceptedFiles.length) {
+                setErrorMessage("SVG files are currently not supported due to bucket storage issues. Please upload PNG, JPG, or JPEG.");
+                return;
+            }
+
             setErrorMessage(""); // ✅ Clear previous errors
-            setFile(acceptedFiles);
-            fieldChange(acceptedFiles);
-            setFileUrl(URL.createObjectURL(acceptedFiles[0]));
+            setFile(filteredFiles);
+            fieldChange(filteredFiles);
+            setFileUrl(URL.createObjectURL(filteredFiles[0]));
         },
         [fieldChange]
     );
@@ -44,7 +51,8 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
     const { getRootProps, getInputProps } = useDropzone({
         onDrop,
         accept: {
-            "image/*": [".png", ".jpeg", ".jpg", ".svg"],
+            "image/png": [".png"],
+            "image/jpeg": [".jpeg", ".jpg"],
         },
         maxSize: MAX_FILE_SIZE, // Enforce max file size
     });
@@ -58,7 +66,6 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
 
             {fileUrl ? (
                 <>
-                    {/* Uploaded Image */}
                     <div className="relative flex flex-1 justify-center w-full p-5">
                         <img
                             src={fileUrl}
@@ -80,7 +87,6 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                     {errorMessage && (
                         <div className="shad-form_message relative text-center p-4 flex items-center gap-1 ">
                             <p>{errorMessage}</p>
-                            {/* Close Button for Error Message */}
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -92,8 +98,6 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                             </button>
                         </div>
                     )}
-
-                    <p className="file_uploader-filename">{file[0]?.name}</p>
                     <p className="file_uploader-label">Click or drag a new file to replace</p>
                 </>
             ) : (
@@ -107,7 +111,7 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                         alt="file-upload"
                     />
                     <h3 className="base-medium text-light-2 mb-2 mt-6">Drag and drop your files here</h3>
-                    <p className="text-light-4 small-regular mb-4">SVG, PNG, JPG, JPEG (MAX: 5MB)</p>
+                    <p className="text-light-4 small-regular mb-4">PNG, JPG, JPEG (MAX: 5MB)</p>
 
                     {errorMessage && (
                         <div className="shad-form_message relative text-center p-4 flex items-center gap-1 mb-4">

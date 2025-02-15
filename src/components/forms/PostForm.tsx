@@ -17,9 +17,10 @@ import { useCreatePost } from "@/lib/react-query/queriesAndMutations"
 
 type PostFormProps = {
   post?: Models.Document;
+  action: 'create' | 'edit';
 }
 
-export const PostForm = ({ post }: PostFormProps ) => {
+export const PostForm = ({ post, action }: PostFormProps ) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } = useCreatePost();
   const { user } = useUserContext();
   const navigate = useNavigate();
@@ -49,6 +50,9 @@ export const PostForm = ({ post }: PostFormProps ) => {
 
     navigate('/');
   }
+
+  console.log(post?.imageUrl);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-9 w-full max-w-5xl">
@@ -72,7 +76,7 @@ export const PostForm = ({ post }: PostFormProps ) => {
             <FormItem>
               <FormLabel className="shad-form_label">Add Images</FormLabel>
               <FormControl>
-                <FileUploader
+              <FileUploader
                   fieldChange={field.onChange}
                   mediaUrl={post?.imageUrl}
                 />
@@ -102,7 +106,7 @@ export const PostForm = ({ post }: PostFormProps ) => {
               <FormLabel className="shad-form_label flex-start gap-1">
                 Add Tags
                 <p className="small-regular text-light-3">
-                  separated by commas ","
+                  (separated by commas ",")
                 </p>
               </FormLabel>
               <FormControl>

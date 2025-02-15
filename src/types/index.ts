@@ -13,7 +13,7 @@ export type INavLink = {
     label: string;
   };
   
-  export type IUpdateUser = {
+  export type IEditUser = {
     userId: string;
     name: string;
     bio: string;
@@ -30,7 +30,7 @@ export type INavLink = {
     tags?: string;
   };
   
-  export type IUpdatePost = {
+  export type IEditPost = {
     postId: string;
     caption: string;
     imageId: string;

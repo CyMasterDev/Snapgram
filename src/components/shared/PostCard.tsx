@@ -28,8 +28,19 @@ const PostCard = ({ post }: PostCardProps) => {
 
                     <div className="flex flex-col">
                         <Link to={`/profile/${post.creator.$id}`}>
-                            <p className="base-medium lg:body-bold text-light-1">{post.creator.name}</p>
-                            <p className="small-regular text-light-3">@{post.creator.username}</p>
+                            <div className="flex gap-2 flex-between">
+                                <p className="base-medium lg:body-bold text-light-1">{post.creator.name}</p>
+                                <p className="small-regular text-light-3">@{post.creator.username}</p>
+                            </div>
+                            <div className="text-left flex gap-2 text-light-3">
+                                <p className="subtle-semibold lg:small-regular">
+                                    {multiFormatRelativeDateString(post.$createdAt)}
+                                </p>
+                                <p className="subtle-semibold lg:small-regular">•</p>
+                                <p className="subtle-semibold lg:small-regular">
+                                    {post.location}
+                                </p>
+                            </div>
                         </Link>
                     </div>
                 </div>
@@ -44,19 +55,10 @@ const PostCard = ({ post }: PostCardProps) => {
                     />
                 </Link>
             </div>
-            <div className="text-left flex gap-2 text-light-3">
-                <p className="subtle-semibold lg:small-regular">
-                    {multiFormatRelativeDateString(post.$createdAt)}
-                </p>
-                <p className="subtle-semibold lg:small-regular">•</p>
-                <p className="subtle-semibold lg:small-regular">
-                    {post.location}
-                </p>
-            </div>
             <Link to={`/posts/${post.$id}`}>
                 <div className="small-medium lg:base-medium py-3">
                     <p>{post.caption}</p>
-                    <ul className="flex gap-1 mt-2">
+                    <ul className="flex flex-wrap gap-1 mt-2">
                         {post.tags.map((tag: string) => (
                             <li key={tag} className="text-light-3">
                                 #{tag.toLowerCase()}

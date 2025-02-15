@@ -1,8 +1,14 @@
 import { PostForm } from "@/components/forms/PostForm"
+import Spinner from "@/components/shared/Spinner";
+import { useGetPostById } from "@/lib/react-query/queriesAndMutations";
 import { useParams } from "react-router-dom"
 
 const EditPost = () => {
   const { id } = useParams();
+  const { data: post, isPending } = useGetPostById(id || '');
+
+  if (isPending) return(<Spinner height={24} width={24} />)
+
   return (
     <div className="flex flex-1">
       <div className="common-container">
@@ -21,7 +27,7 @@ const EditPost = () => {
           </h2>
         </div>
 
-        <PostForm />
+        <PostForm action="edit" post={post}/>
       </div>
     </div>
   )
