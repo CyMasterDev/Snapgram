@@ -2,6 +2,7 @@ import { useDeleteSavedPost, useGetCurrentUser, useLikePost, useSavePost } from 
 import { checkIsLiked } from "@/lib/utils";
 import { Models } from "appwrite"
 import React, { useState, useEffect } from "react";
+import Spinner from "./Spinner";
 
 type PostStatisticsProps = {
     post: Models.Document;
@@ -15,10 +16,16 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
     const [isSaved, setIsSaved] = useState(false);
 
     const { mutate: likePost } = useLikePost();
-    const { mutate: savePost } = useSavePost();
-    const { mutate: deleteSavedPost } = useDeleteSavedPost();
+    const { mutate: savePost, isPending: isSavingPost } = useSavePost();
+    const { mutate: deleteSavedPost, isPending: isDeletingSavedPost } = useDeleteSavedPost();
 
     const { data: currentUser } = useGetCurrentUser();
+
+    const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.post.$id === post.$id);
+
+    useEffect(() => {
+        setIsSaved(!!savedPostRecord)
+    }, [currentUser])
 
     const handleLikePost = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -39,8 +46,6 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
 
     const handleSavePost = (e: React.MouseEvent) => {
         e.stopPropagation();
-
-        const savedPostRecord = currentUser?.save.find((record: Models.Document) => record.$id === post.$id);
 
         if(savedPostRecord) {
             setIsSaved(false);
@@ -77,7 +82,7 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
                 />
                 <p className="small-medium lg:base-medium">0</p>
             </div>
-            <div className="flex gap-2 ml-5">
+            {isSavingPost || isDeletingSavedPost ? <div className="flex gap-2 ml-5"><Spinner width={20} height={20}/></div> : <div className="flex gap-2 ml-5">
                 <img
                 src={isSaved ? "/assets/icons/saved.svg" : "assets/icons/save.svg"}
                 draggable="false"
@@ -87,7 +92,7 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
                 height={20}
                 onClick={handleSavePost}
                 />
-            </div>
+            </div>}
         </div>
     )
 }

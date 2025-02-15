@@ -292,7 +292,7 @@
   }
 
   .shad-button_close_dark_4 {
-    @apply absolute p-1 top-7 right-7 flex gap-2 rounded-full bg-dark-4;
+    @apply absolute p-2 top-7 right-7 flex gap-2 rounded-full bg-dark-4;
   }
 
   .shad-button_ghost {

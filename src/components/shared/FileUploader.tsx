@@ -73,7 +73,7 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                             }}
                             className="shad-button_close_dark_4"
                         >
-                            <img src="/assets/icons/close.svg" width={36} height={36} draggable="false" className="select-none"/>
+                            <X size={20}/>
                         </button>
                     </div>
 
@@ -88,7 +88,7 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                                 }}
                                 className="shad-button_ghost"
                             >
-                                <X size={16} />
+                                <X size={20} />
                             </button>
                         </div>
                     )}
@@ -119,7 +119,7 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
                                 }}
                                 className="shad-button_ghost"
                             >
-                                <X size={16} />
+                                <X size={20} />
                             </button>
                         </div>
                     )}
