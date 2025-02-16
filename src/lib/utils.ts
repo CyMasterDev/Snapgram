@@ -76,3 +76,27 @@ export const checkIsLiked = (likeList: string[], userId: string) => {
 export const checkIsFollowed = (followerList: string[], userId: string) => {
   return followerList.includes(userId);
 };
+
+export function formatLikes(likes: number): string {
+
+  if (likes < 1000) {
+    return likes.toString();
+  }
+
+  if (likes < 1_000_000) {
+    const formatted = (likes / 1_000).toFixed(1);
+    return removeTrailingDecimal(formatted) + "K";
+  }
+
+  if (likes < 1_000_000_000) {
+    const formatted = (likes / 1_000_000).toFixed(1);
+    return removeTrailingDecimal(formatted) + "M";
+  }
+
+  const formatted = (likes / 1_000_000_000).toFixed(1);
+  return removeTrailingDecimal(formatted) + "B";
+}
+
+function removeTrailingDecimal(value: string): string {
+  return value.replace(/\.0$/, "");
+}

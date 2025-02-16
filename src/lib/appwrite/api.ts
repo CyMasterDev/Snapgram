@@ -157,7 +157,7 @@ export function getFilePreview(fileId: string) {
       2000,
       2000,
       ImageGravity.Top,
-      25,
+      35,
     );
 
     if (!fileUrl) throw Error;
@@ -322,5 +322,44 @@ export async function deletePost(postId: string, imageId:string) {
     return { status: 'OK' }
   } catch (error) {
     console.log(error)
+  }
+}
+
+export async function getInfinitePosts({ pageParam }: { pageParam: number}) {
+  const queries: any[] = [Query.orderDesc('$updatedAt'), Query.limit(10)]
+
+  if(pageParam) {
+    queries.push(Query.cursorAfter(pageParam.toString()));
+  }
+
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      queries
+    )
+
+    if(!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function searchPosts(searchQuery: string) {
+
+  try {
+    const posts = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      [Query.search('caption', searchQuery)]
+    )
+
+    if(!posts) throw Error;
+
+    return posts;
+  } catch (error) {
+    console.log(error);
   }
 }

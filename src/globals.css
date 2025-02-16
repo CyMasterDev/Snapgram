@@ -11,6 +11,7 @@
 
   body {
     @apply bg-dark-1 text-white min-h-screen font-inter;
+    overflow: hidden;
   }
 }
 
@@ -90,30 +91,34 @@
     @apply flex justify-start items-center;
   }
 
+  body[data-scroll-locked] {
+    margin-right: 0 !important;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
-    cursor: default;
-    width: 7.5px;
-    height: 3px;
-    border-radius: 5px;
+    cursor: default !important;
+    width: 7.5px !important;
+    height: 3px !important;
+    border-radius: 5px !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    background: transparent !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    cursor: default;
-    background: #5c5c7b;
-    border-radius: 50px;
+    cursor: default !important;
+    background: #5c5c7b !important;
+    border-radius: 50px !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    cursor: default;
-    background: #7878a3;
+    cursor: default !important;
+    background: #7878a3 !important;
   }
 
   .custom-scrollbar::-webkit-scrollbar-corner {
-    background: transparent;
+    background: transparent !important;
   }
 
   .common-container {
@@ -157,7 +162,7 @@
 
   /* Post Details */
   .post_details-container {
-    @apply flex flex-col flex-1 gap-10 overflow-scroll py-10 px-5 md:p-14 custom-scrollbar items-center;
+    @apply flex flex-col flex-1 gap-5 overflow-scroll py-10 px-5 md:p-14 custom-scrollbar items-center;
   }
 
   .post_details-card {
@@ -165,7 +170,7 @@
   }
 
   .post_details-img {
-    @apply h-80 lg:h-[480px] xl:w-[48%] rounded-t-[30px] xl:rounded-l-[24px] xl:rounded-tr-none object-cover p-5 bg-dark-1;
+    @apply h-80 lg:h-[480px] xl:w-[48%] rounded-[40px] object-cover p-5;
   }
 
   .post_details-info {

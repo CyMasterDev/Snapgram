@@ -5,9 +5,14 @@
         label: "Home",
     },
     {
-        imgURL: "/assets/icons/wallpaper.svg",
+        imgURL: "/assets/icons/compass.svg",
         route: "/explore",
         label: "Explore",
+    },
+    {
+        imgURL: "/assets/icons/bell.svg",
+        route: "/notifications",
+        label: "Notifications",
     },
     {
         imgURL: "/assets/icons/people.svg",
@@ -33,7 +38,7 @@ export const bottombarLinks = [
         label: "Home",
     },
     {
-        imgURL: "/assets/icons/wallpaper.svg",
+        imgURL: "/assets/icons/compass.svg",
         route: "/explore",
         label: "Explore",
     },
@@ -45,6 +50,6 @@ export const bottombarLinks = [
     {
         imgURL: "/assets/icons/gallery-add.svg",
         route: "/create-post",
-        label: "Create Post",
+        label: "Create",
     },
 ];

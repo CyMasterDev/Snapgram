@@ -13,15 +13,18 @@ import FileUploader from "../shared/FileUploader"
 import { Models } from "appwrite"
 import { useUserContext } from "@/context/AuthContext"
 import { toast } from "@/hooks/use-toast"
-import { useCreatePost } from "@/lib/react-query/queriesAndMutations"
+import { useCreatePost, useEditPost } from "@/lib/react-query/queriesAndMutations"
+import Spinner from "../shared/Spinner"
 
 type PostFormProps = {
   post?: Models.Document;
-  action: 'create' | 'edit';
+  action: 'Create' | 'Edit';
 }
 
 export const PostForm = ({ post, action }: PostFormProps ) => {
   const { mutateAsync: createPost, isPending: isLoadingCreate } = useCreatePost();
+  const { mutateAsync: editPost, isPending: isLoadingEdit } = useEditPost();
+
   const { user } = useUserContext();
   const navigate = useNavigate();
 
@@ -36,6 +39,24 @@ export const PostForm = ({ post, action }: PostFormProps ) => {
   })
 
   async function onSubmit(values: z.infer<typeof PostValidation>) {
+    if(post && action === 'Edit') {
+      const editedPost = await editPost({
+        ...values,
+        postId: post.$id,
+        imageId: post?.imageId,
+        imageUrl: post?.imageUrl,
+      })
+      if(!editedPost) {
+        toast({
+          title: 'Error editing post',
+          description: 'Something went wrong. Please check your connection and try again.'
+        })
+      }
+
+      return navigate(`/posts/${post.$id}`)
+    }
+
+
     const newPost = await createPost({
       ...values,
       userId: user.id,
@@ -125,6 +146,7 @@ export const PostForm = ({ post, action }: PostFormProps ) => {
           <Button
             type="button"
             className="shad-button_dark_4"
+            onClick={() => navigate(-1)}
           >
             Cancel
           </Button>
@@ -132,8 +154,10 @@ export const PostForm = ({ post, action }: PostFormProps ) => {
           <Button
             type="submit"
             className="shad-button_primary whitespace-nowrap"
+            disabled={isLoadingCreate || isLoadingEdit}
           >
-            Post
+            {(isLoadingCreate || isLoadingEdit) && <Spinner/>}
+            {action} Post
           </Button>
         </div>
       </form>

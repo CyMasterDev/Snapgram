@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 
 import SigninForm from './_auth/forms/SigninForm';
 import SignupForm from './_auth/forms/SignupForm';
-import { AllUsers, CreatePost, EditPost, EditProfile, Explore, Home, PostDetails, Profile, Saved } from './_root/pages';
+import { AllUsers, CreatePost, EditPost, EditProfile, Explore, Home, Notifications, PostDetails, Profile, Saved } from './_root/pages';
 import './globals.css';
 import AuthLayout from './_auth/AuthLayout';
 import RootLayout from './_root/RootLayout';
@@ -23,6 +23,7 @@ const App = () => {
           <Route index element={<Home />} />
           <Route path='/explore' element={<Explore />} />
           <Route path='/saved' element={<Saved />} />
+          <Route path='/notifications' element={<Notifications />}/>
           <Route path='/all-users' element={<AllUsers />} />
           <Route path='/create-post' element={<CreatePost />} />
           <Route path='/edit-post/:id' element={<EditPost />} />

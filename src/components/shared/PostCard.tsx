@@ -55,7 +55,7 @@ const PostCard = ({ post }: PostCardProps) => {
                     />
                 </Link>
             </div>
-            <Link to={`/posts/${post.$id}`}>
+            <Link state={{ fromInternal: true }} to={`/posts/${post.$id}`}>
                 <div className="small-medium lg:base-medium py-3">
                     <p>{post.caption}</p>
                     <ul className="flex flex-wrap gap-1 mt-2">

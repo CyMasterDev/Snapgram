@@ -17,7 +17,7 @@ const Home = () => {
               height={36}
               draggable="false"
               className="select-none"
-              alt="add"
+              alt="home"
             />
             <h2 className='h3-bold md:h2-bold text-left w-full'>Home Feed</h2>
           </div>

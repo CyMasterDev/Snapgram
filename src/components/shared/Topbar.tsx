@@ -28,14 +28,22 @@ const Topbar = () => {
         </Link>
 
         <div className='flex gap-4'>
-            <Button variant='ghost' className='shad-button_ghost' onClick={() => signOut()}>
-              <img
-                src='/assets/icons/logout.svg'
-                alt='sign out'
-                draggable="false"
-                className="select-none"
-              />
-            </Button>
+          <Link className='shad-button_ghost' to='/notifications'>
+            <img
+              src='/assets/icons/bell.svg'
+              alt='notifications'
+              draggable="false"
+              className="select-none"
+            />
+          </Link>
+          <Button variant='ghost' className='shad-button_ghost' onClick={() => signOut()}>
+            <img
+              src='/assets/icons/logout.svg'
+              alt='sign out'
+              draggable="false"
+              className="select-none"
+            />
+          </Button>
           <Link to={`/profile/${user.id}`} className='flex-center gap-3'>
             <img
               src={user.imageUrl || '/assets/icons/profile-placeholder.svg'}
