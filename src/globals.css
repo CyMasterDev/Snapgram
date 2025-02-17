@@ -90,6 +90,12 @@
   .flex-start {
     @apply flex justify-start items-center;
   }
+  
+  .truncater {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 
   body[data-scroll-locked] {
     margin-right: 0 !important;

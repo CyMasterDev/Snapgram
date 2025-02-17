@@ -10,7 +10,7 @@ type PostStatisticsProps = {
 }
 
 const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
-    const likesList = post?.likes.map((user: Models.Document) => user.$id );
+    const likesList = post?.likes.map((user: Models.Document) => user.$id);
 
     const [likes, setLikes] = useState(likesList);
     const [isSaved, setIsSaved] = useState(false);
@@ -34,20 +34,20 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
 
         const hasLiked = newLikes.includes(userId);
 
-        if(hasLiked) {
+        if (hasLiked) {
             newLikes = newLikes.filter((id) => id !== userId);
         } else {
             newLikes.push(userId);
         }
 
         setLikes(newLikes);
-        likePost({ postId: post?.$id || '', likesArray: newLikes})
+        likePost({ postId: post?.$id || '', likesArray: newLikes })
     }
 
     const handleSavePost = (e: React.MouseEvent) => {
         e.stopPropagation();
 
-        if(savedPostRecord) {
+        if (savedPostRecord) {
             setIsSaved(false);
             deleteSavedPost(savedPostRecord.$id);
         } else {
@@ -57,42 +57,42 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
     }
 
     return (
-        <div className="flex justify-between items-center z-20">
+        <div className="flex justify-between items-center z-20 gap-6">
             <div className="flex justify-between gap-7">
-            <div className="flex gap-2">
-                <img
-                src={checkIsLiked(likes, userId) ? "/assets/icons/liked.svg" : "/assets/icons/like.svg"}
-                draggable="false"
-                className="select-none cursor-pointer"
-                alt="like"
-                width={20}
-                height={20}
-                onClick={handleLikePost}
-                />
-                <p className="small-medium lg:base-medium">{formatLikes(likes.length)}</p>
+                <div className="flex gap-2">
+                    <img
+                        src={checkIsLiked(likes, userId) ? "/assets/icons/liked.svg" : "/assets/icons/like.svg"}
+                        draggable="false"
+                        className="select-none cursor-pointer"
+                        alt="like"
+                        width={20}
+                        height={20}
+                        onClick={handleLikePost}
+                    />
+                    <p className="small-medium lg:base-medium">{formatLikes(likes.length)}</p>
+                </div>
+                <div className="flex gap-2 flex-center">
+                    <img
+                        src="/assets/icons/chat.svg"
+                        draggable="false"
+                        className="select-none cursor-pointer"
+                        alt="like"
+                        width={20}
+                        height={20}
+                        onClick={() => { }}
+                    />
+                    <p className="small-medium lg:base-medium">0</p>
+                </div>
             </div>
-            <div className="flex gap-2 flex-center">
+            {isSavingPost || isDeletingSavedPost ? <div className="flex gap-2"><Spinner width={20} height={20} /></div> : <div className="flex gap-2">
                 <img
-                src="/assets/icons/chat.svg"
-                draggable="false"
-                className="select-none cursor-pointer"
-                alt="like"
-                width={20}
-                height={20}
-                onClick={() => {}}
-                />
-                <p className="small-medium lg:base-medium">0</p>
-            </div>
-            </div>
-            {isSavingPost || isDeletingSavedPost ? <div className="flex gap-2 ml-5"><Spinner width={20} height={20}/></div> : <div className="flex gap-2 ml-5">
-                <img
-                src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
-                draggable="false"
-                className="select-none cursor-pointer"
-                alt="like"
-                width={20}
-                height={20}
-                onClick={handleSavePost}
+                    src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
+                    draggable="false"
+                    className="select-none cursor-pointer"
+                    alt="like"
+                    width={20}
+                    height={20}
+                    onClick={handleSavePost}
                 />
             </div>}
         </div>

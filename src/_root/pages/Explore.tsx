@@ -3,18 +3,31 @@ import { Input } from "@/components/ui/input";
 import PostFilter from "@/components/shared/PostFilter";
 import SearchResults from "@/components/shared/SearchResults";
 import PostGrid from "@/components/shared/PostGrid";
-import { useSearchPosts } from "@/lib/react-query/queriesAndMutations";
+import { useGetInfinitePosts, useSearchPosts } from "@/lib/react-query/queriesAndMutations";
+import useDebounce from "@/hooks/useDebounce";
+import Spinner from "@/components/shared/Spinner";
 
 const Explore = () => {
-  const [searchValue, setSearchValue] = useState('')
+  const { data: posts, fetchNextPage, hasNextPage } = useGetInfinitePosts();
+
+  const [searchValue, setSearchValue] = useState('');
   const [selectedSort, setSelectedSort] = useState("All");
 
-  const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(searchValue)
+  const debouncedValue = useDebounce(searchValue, 500);
+  const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedValue);
 
-  //const posts = [];
+  if(!posts) {
+    return (
+      <div className="flex-center w-full h-full">
+        <Spinner/>
+      </div>
+    )
+  }
 
-  //const shouldShowSearchResults = searchValue !== '';
-  //const shouldShowPosts = !shouldShowSearchResults && posts?.pages.every((item) => item.documents.length === 0)
+  console.log(posts);
+
+  const shouldShowSearchResults = searchValue !== '';
+  const shouldShowPosts = !shouldShowSearchResults && posts?.pages.every((item) => item.documents.length === 0)
 
   return (
     <div className='explore-container'>
@@ -47,17 +60,18 @@ const Explore = () => {
         <PostFilter selectedSort={selectedSort} setSelectedSort={setSelectedSort} />
       </div>
 
-      {/*<div className="flex flex-wrap gap-9 w-full max-w-5xl">
+      <div className="flex flex-wrap gap-9 w-full max-w-5xl">
         {shouldShowSearchResults ? (
           <SearchResults 
-          
+            isSearchFetching={isSearchFetching}
+            searchedPosts={searchedPosts}
           />
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full">That's all we have! Check back later for new posts!</p>
         ) : posts.pages.map((item, index) => (
           <PostGrid key={`page-${index}`} posts={item.documents}/>
         ))}
-      </div>*/}
+      </div>
     </div>
   )
 }

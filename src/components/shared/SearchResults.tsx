@@ -1,6 +1,4 @@
-import React from 'react'
-
-const SearchResults = () => {
+const SearchResults = ({ isSearchFetching, searchedPosts }: SearchResultsProps) => {
   return (
     <div>SearchResults</div>
   )
