@@ -65,13 +65,21 @@ const Explore = () => {
           <SearchResults 
             isSearchFetching={isSearchFetching}
             searchedPosts={searchedPosts}
+            {/* for showing no results found for "{searchQuery}" */}
+            searchQuery={debouncedValue}
           />
         ) : shouldShowPosts ? (
-          <p className="text-light-4 mt-10 text-center w-full">That's all we have! Check back later for new posts!</p>
+          <p className="text-light-4 mt-10 text-center w-full">That's all we have! Check back later for more posts!</p>
         ) : posts.pages.map((item, index) => (
           <PostGrid key={`page-${index}`} posts={item.documents}/>
         ))}
       </div>
+
+      {hasNextPage && !searchValue && (
+        <div ref={ref} className="mt-10">
+          <Spinner/>
+        </div>
+      )}
     </div>
   )
 }
