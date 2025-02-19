@@ -23,7 +23,7 @@ export const SignupValidation = z.object({
     .regex(/^[a-z0-9_-]+$/, {
       message: "Username can only contain lowercase letters, numbers, dashes, and underscores",
     }),
-  email: z.string().email().min(8, { message: "Please enter your email" }),
+  email: z.string().email().min(8, { message: "Please enter your email, this field is required" }),
   password: z
     .string()
     .min(8, {
@@ -33,8 +33,8 @@ export const SignupValidation = z.object({
 
 
 export const SigninValidation = z.object({
-  email: z.string().email().min(1, { message: "Please enter your email" }),
-  password: z.string().min(1, { message: "Please enter your password" }),
+  email: z.string().email().min(1, { message: "Please enter your email, this field is required" }),
+  password: z.string().min(1, { message: "Please enter your password, this field is required" }),
 });
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -42,7 +42,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 export const PostValidation = z.object({
   caption: z
     .string()
-    .min(1, { message: "Please enter a caption" })
+    .min(1, { message: "Please enter a caption, this field is required" })
     .max(2200, { message: "Caption is too long, please enter a max of 2200 characters" }),
   file: z
     .custom<File[]>()
@@ -51,5 +51,12 @@ export const PostValidation = z.object({
     }),
   location: z.string().max(100, { message: "Location is too long, please enter a max of 100 characters" }),
   tags: z.string(),
+});
+
+export const CommentValidation = z.object({
+  comment: z
+    .string()
+    .min(1, { message: "Please type your comment, this field is required" })
+    .max(2200, { message: "Comment is too long, please enter a max of 2200 characters" }),
 });
 

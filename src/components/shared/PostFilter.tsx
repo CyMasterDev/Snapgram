@@ -15,14 +15,9 @@ import {
 } from "@/components/ui/accordion";
 
 const PostFilter = ({ selectedSort, setSelectedSort }: { selectedSort: string, setSelectedSort: React.Dispatch<React.SetStateAction<string>> }) => {
-    const [sortOrder, setSortOrder] = useState<'Ascending' | 'Descending'>('Ascending');
 
     const handleSortChange = (sortOption: string) => {
             setSelectedSort(sortOption)
-    };
-
-    const toggleSortOrder = () => {
-        setSortOrder(prev => (prev === 'Ascending' ? 'Descending' : 'Ascending'));
     };
 
     return (
@@ -42,17 +37,6 @@ const PostFilter = ({ selectedSort, setSelectedSort }: { selectedSort: string, s
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-64 bg-dark-3 rounded-2xl p-3 border-none select-none">
-                {/* Sort Order Toggle */}
-                <div className="flex justify-between items-center">
-                    <DropdownMenuLabel className="text-light-2 base-medium">Sort Order</DropdownMenuLabel>
-                    <button
-                        onClick={toggleSortOrder}
-                        className="text-light-4 cursor-pointer text-sm px-2 py-1"
-                    >
-                        {sortOrder === 'Ascending' ? 'Ascending' : 'Descending'}
-                    </button>
-                </div>
-
                 <DropdownMenuSeparator />
 
                 <DropdownMenuLabel className="text-light-2 base-medium">Filter by</DropdownMenuLabel>

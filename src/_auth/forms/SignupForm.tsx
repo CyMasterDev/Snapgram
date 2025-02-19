@@ -40,7 +40,10 @@ const SignupForm = () => {
 
     if(!newUser) {
       return toast({
-        title: "Whoops! We couldn't sign you up", description: "No new user account was created, please try again later."})
+        title: "Whoops! We couldn't sign you up",
+        description: "No new user account was created, please try again later.",
+        variant: "destructive"
+      })
     }
 
     const session = await signInAccount({
@@ -49,7 +52,11 @@ const SignupForm = () => {
     })
 
     if(!session) {
-      return toast({ title: "Whoops! We couldn't sign you into your new account", description: "Your session is missing or expired, please try again later."})
+      return toast({
+        title: "Whoops! We couldn't sign you into your new account",
+        description: "Your session is missing or expired, please try again later.",
+        variant: "destructive"
+      })
     }
 
     const isLoggedIn = await checkAuthUser();
@@ -59,7 +66,11 @@ const SignupForm = () => {
 
       navigate('/')
     } else {
-      return toast({ title: "Whoops! We couldn't sign you up", description: "Navigation failed. Something went wrong, please try again later."})
+      return toast({
+        title: "Whoops! We couldn't sign you up",
+        description: "Navigation failed. Something went wrong, please try again later.",
+        variant: "destructive"
+      })
     }
   }
 

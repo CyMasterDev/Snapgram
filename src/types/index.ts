@@ -7,7 +7,7 @@ export type IContextType = {
   checkAuthUser: () => Promise<boolean>;
 }
 
-export type INavLink = {
+  export type INavLink = {
     imgURL: string;
     route: string;
     label: string;
@@ -55,3 +55,15 @@ export type INavLink = {
     username: string;
     password: string;
   };
+
+  export type INewComment = {
+    userId: string;
+    content: string;
+    postId: string;
+    parentCommentId?: string; //optional
+  }
+
+  export type IEditComment = {
+    commentId: string;
+    content: string;
+  }

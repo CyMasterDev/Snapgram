@@ -1,13 +1,24 @@
-import { PostForm } from "@/components/forms/PostForm"
-import Spinner from "@/components/shared/Spinner";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetPostById } from "@/lib/react-query/queriesAndMutations";
-import { useParams } from "react-router-dom"
+import { useUserContext } from "@/context/AuthContext";
+import { toast } from "@/hooks/use-toast";
+import Spinner from "@/components/shared/Spinner";
+import { PostForm } from "@/components/forms/PostForm";
 
 const EditPost = () => {
   const { id } = useParams();
-  const { data: post, isPending } = useGetPostById(id || '');
+  const { data: post, isPending } = useGetPostById(id || "");
+  const { user } = useUserContext();
+  const navigate = useNavigate();
 
-  if (isPending) return(<Spinner height={24} width={24} />)
+  useEffect(() => {
+    if (!isPending && post && post.creator.$id !== user.id) {
+      navigate("/");
+    }
+  }, [isPending, post, user, navigate]);
+
+  if (isPending) return <Spinner />;
 
   return (
     <div className="flex flex-1">
@@ -21,16 +32,13 @@ const EditPost = () => {
             className="select-none"
             alt="edit"
           />
-
-          <h2 className="h3-bold md:h-2-bold text-left w-full">
-            Edit Post
-          </h2>
+          <h2 className="h3-bold md:h-2-bold text-left w-full">Edit Post</h2>
         </div>
 
-        <PostForm action="Edit" post={post}/>
+        <PostForm action="Edit" post={post} />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditPost
+export default EditPost;

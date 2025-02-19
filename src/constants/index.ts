@@ -16,7 +16,7 @@
     },
     {
         imgURL: "/assets/icons/people.svg",
-        route: "/all-users",
+        route: "/people",
         label: "People",
     },
     {
@@ -41,6 +41,11 @@ export const bottombarLinks = [
         imgURL: "/assets/icons/compass.svg",
         route: "/explore",
         label: "Explore",
+    },
+    {
+        imgURL: "/assets/icons/people.svg",
+        route: "/people",
+        label: "People",
     },
     {
         imgURL: "/assets/icons/bookmark.svg",

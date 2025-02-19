@@ -73,11 +73,7 @@ export const checkIsLiked = (likeList: string[], userId: string) => {
   return likeList.includes(userId);
 };
 
-export const checkIsFollowed = (followerList: string[], userId: string) => {
-  return followerList.includes(userId);
-};
-
-export function formatLikes(likes: number): string {
+export function formatNumbers(likes: number): string {
 
   if (likes < 1000) {
     return likes.toString();

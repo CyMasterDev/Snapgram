@@ -1,11 +1,10 @@
 import { Models } from "appwrite";
 import Spinner from "./Spinner";
 import PostGrid from "./PostGrid";
-import { useSearchPosts } from "@/lib/react-query/queriesAndMutations";
 
 type SearchResultsProps = {
   isSearchFetching: boolean;
-  searchedPosts: Models.Document[];
+  searchedPosts?: Models.Document[];
   searchQuery: string
 }
 

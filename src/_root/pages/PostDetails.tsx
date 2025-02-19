@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import PostStatistics from "@/components/shared/PostStatistics";
 import Spinner from "@/components/shared/Spinner";
 import { Button } from "@/components/ui/button";
 import { useUserContext } from "@/context/AuthContext";
-import { useGetCurrentUser, useGetPostById } from "@/lib/react-query/queriesAndMutations";
+import { useDeletePost, useDeleteSavesByPostId, useGetPostById } from "@/lib/react-query/queriesAndMutations";
 import { multiFormatRelativeDateString } from "@/lib/utils";
 import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
+import CommentForm from "@/components/forms/CommentForm";
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -13,18 +15,17 @@ const PostDetails = () => {
   const { id } = useParams();
   const { data: post, isPending } = useGetPostById(id || "");
   const { user } = useUserContext();
+  const { mutate: deletePost } = useDeletePost();
+  const { mutate: deleteSavesByPostId, isPending: isDeletingSavesByPostId } = useDeleteSavesByPostId();
 
-  // State to control the visibility of the back button
   const [showBackButton, setShowBackButton] = useState(false);
 
   useEffect(() => {
-    // 1. If we navigated internally, location.state.fromInternal should be true.
     if (location.state?.fromInternal) {
       setShowBackButton(true);
       return;
     }
 
-    // 2. Otherwise, check if a referrer exists and is on the same domain.
     if (document.referrer) {
       try {
         const referrerUrl = new URL(document.referrer);
@@ -38,18 +39,25 @@ const PostDetails = () => {
         setShowBackButton(false);
       }
     } else {
-      // 3. No referrer → likely not an internal navigation.
       setShowBackButton(false);
     }
   }, [location]);
 
-  const handleDeletePost = () => {
-    // Implement delete logic here
+  const handleDeletePost = async () => {
+    if (post !== undefined) {
+      deletePost({ postId: post?.$id, imageId: post.imageId });
+      deleteSavesByPostId({ postId: post?.$id });
+      navigate("/");
+      toast({
+        title: 'Successfully Deleted Post',
+        description: 'Done! Your post has been deleted from the platform.',
+        variant: 'default'
+      })
+    }
   };
 
   return (
     <div className="post_details-container">
-      {/* Use a conditional that applies "hidden" if showBackButton is false */}
       <div className={showBackButton ? "md:flex max-w-5xl w-full" : "hidden"}>
         <Button
           onClick={() => navigate(-1)}
@@ -82,7 +90,7 @@ const PostDetails = () => {
                   draggable="false"
                 />
                 <div className="flex gap-1 flex-col">
-                  <div className="flex gap-2 flex-between">
+                  <div className="flex gap-2 flex-start">
                     <p className="base-medium lg:body-bold text-light-1">{post.creator.name}</p>
                     <p className="small-regular text-light-3">@{post.creator.username}</p>
                   </div>
@@ -90,8 +98,12 @@ const PostDetails = () => {
                     <p className="subtle-semibold lg:small-regular">
                       {multiFormatRelativeDateString(post?.$createdAt)}
                     </p>
-                    <p className="subtle-semibold lg:small-regular">•</p>
-                    <p className="subtle-semibold lg:small-regular">{post?.location}</p>
+                    {post.location && (
+                      <div className="text-left flex gap-2 text-light-3">
+                        <p className="subtle-semibold lg:small-regular">•</p>
+                        <p className="subtle-semibold lg:small-regular">{post?.location}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Link>
@@ -104,45 +116,60 @@ const PostDetails = () => {
                   <img
                     src="/assets/icons/edit.svg"
                     alt="edit"
-                    width={24}
-                    height={24}
+                    width={22}
+                    height={22}
                     draggable="false"
                     className="select-none"
                   />
                 </Link>
 
-                <Button
-                  onClick={handleDeletePost}
-                  variant="ghost"
-                  className={`ghost_details-delete_btn ${user.id !== post?.creator.$id && "hidden"}`}
-                >
-                  <img
-                    src="/assets/icons/delete.svg"
-                    alt="delete"
-                    width={24}
-                    height={24}
-                    className="select-none"
-                    draggable="false"
-                  />
-                </Button>
+                {isDeletingSavesByPostId || !post ? (
+                  <Spinner />
+                ) : (
+                  <Button
+                    onClick={handleDeletePost}
+                    variant="ghost"
+                    className={`ghost_details-delete_btn ${user.id !== post?.creator.$id && "hidden"}`}
+                  >
+                    <img
+                      src="/assets/icons/delete.svg"
+                      alt="delete"
+                      width={24}
+                      height={24}
+                      className="select-none"
+                      draggable="false"
+                    />
+                  </Button>
+                )}
               </div>
             </div>
 
             <div className="flex flex-col flex-1 w-full small-medium lg:base-medium">
-              <p>{post?.caption}</p>
-              <ul className="flex gap-1 mt-2 flex-wrap">
-                {post?.tags.map((tag: string, index: string) => (
-                  <li key={`${tag}${index}`} className="text-light-3">
-                    #{tag}
-                  </li>
-                ))}
-              </ul>
-
+              <p className="break-all whitespace-normal">{post?.caption}</p>
+              {post?.tags !== '' && (
+                <ul className="flex flex-wrap gap-1 mt-2">
+                  {post?.tags.map((tag: string, index: string) => (
+                    <li
+                      key={`${tag}${index}`}
+                      className="text-light-3 min-w-0 max-w-full"
+                    >
+                      <div className="w-full min-w-0">
+                        <p className="break-all whitespace-normal">
+                          #{tag.toLowerCase()}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
               <hr className="border w-full border-dark-4/80 mt-5" />
             </div>
 
+
+
             <div className="w-full">
               <PostStatistics post={post} userId={user.id} />
+              {/*<CommentForm action='Create'/>*/}
             </div>
           </div>
         </div>

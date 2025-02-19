@@ -1,29 +1,29 @@
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import PostFilter from "@/components/shared/PostFilter";
-import SearchResults from "@/components/shared/SearchResults";
-import PostGrid from "@/components/shared/PostGrid";
-import { useGetInfinitePosts, useSearchPosts } from "@/lib/react-query/queriesAndMutations";
-import useDebounce from "@/hooks/useDebounce";
-import Spinner from "@/components/shared/Spinner";
-import { useInView } from 'react-intersection-observer'
-import PostList from "@/components/shared/PostList";
+import PostFilter from '@/components/shared/PostFilter';
+import Spinner from '@/components/shared/Spinner';
+import UserCard from '@/components/shared/UserCard';
+import UserSearchResults from '@/components/shared/UserSearchResults';
+import { Input } from '@/components/ui/input'
+import useDebounce from '@/hooks/useDebounce';
+import { useGetInfiniteUsers, useSearchUsers } from '@/lib/react-query/queriesAndMutations';
+import { Models } from 'appwrite';
+import React, { useEffect, useState } from 'react'
+import { useInView } from 'react-intersection-observer';
 
-const Explore = () => {
+const People = () => {
   const { ref, inView } = useInView();
-  const { data: posts, fetchNextPage, hasNextPage } = useGetInfinitePosts();
+  const { data: users, fetchNextPage, hasNextPage } = useGetInfiniteUsers();
 
   const [searchValue, setSearchValue] = useState('');
   const [selectedSort, setSelectedSort] = useState("All");
 
   const debouncedValue = useDebounce(searchValue, 300);
-  const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedValue);
+  const { data: searchedUsers, isFetching: isSearchFetching } = useSearchUsers(debouncedValue);
 
   useEffect(() => {
     if (inView && !searchValue) fetchNextPage();
   }, [inView, searchValue])
 
-  if (!posts) {
+  if (!users) {
     return (
       <div className="flex-center w-full h-full">
         <Spinner />
@@ -32,21 +32,21 @@ const Explore = () => {
   }
 
   const shouldShowSearchResults = searchValue !== '';
-  const shouldShowPosts = !shouldShowSearchResults && posts?.pages.every((item) => item?.documents.length === 0)
+  const shouldShowUsers = !shouldShowSearchResults && users?.pages.every((item) => item?.documents.length === 0)
 
   return (
     <div className='explore-container'>
       <div className='explore-inner_container'>
         <div className="max-w-5xl flex-start gap-3 justify-start w-full">
           <img
-            src="/assets/icons/compass.svg"
+            src="/assets/icons/people.svg"
             width={36}
             height={36}
             draggable="false"
             className="select-none"
-            alt="explore"
+            alt="people"
           />
-          <h2 className='h3-bold md:h2-bold w-full'>Explore</h2>
+          <h2 className='h3-bold md:h2-bold text-left w-full'>People</h2>
         </div>
         <div className='flex gap-1 px-4 w-full rounded-xl bg-dark-4'>
           <img
@@ -59,8 +59,8 @@ const Explore = () => {
           />
           <Input
             type='text'
-            placeholder='Search posts by caption, location or tags...'
-            className='explore-search'
+            placeholder='Search users by name or username...'
+            className='user-search'
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
@@ -71,25 +71,27 @@ const Explore = () => {
         {shouldShowSearchResults ? (
           <h3 className="body-bold md:h3-bold">Search Results For "{debouncedValue}"</h3>
         ) : (
-          <h3 className="body-bold md:h3-bold">{selectedSort} {selectedSort === 'All' && 'Posts'}</h3>
+          <h3 className="body-bold md:h3-bold">{selectedSort} {selectedSort === 'All' && 'Users'}</h3>
         )
         }
 
         <PostFilter selectedSort={selectedSort} setSelectedSort={setSelectedSort} />
       </div>
 
-      <div className="flex flex-wrap gap-9 w-full max-w-5xl">
+      <div className="flex flex-wrap gap-9 w-full max-w-5xl user-grid">
         {shouldShowSearchResults ? (
-          <SearchResults
+          <UserSearchResults
             isSearchFetching={isSearchFetching}
-            searchedPosts={searchedPosts}
+            searchedUsers={searchedUsers}
             searchQuery={debouncedValue}
           />
-        ) : shouldShowPosts ? (
-          <p className="text-light-4 mt-10 text-center w-full">That's all we have! Check back later for more posts!</p>
-        ) : posts.pages.map((item, index) => (
-          <PostGrid key={`page-${index}`} posts={item.documents} />
-        ))}
+        ) : shouldShowUsers ? (
+          <p className="text-light-4 mt-10 text-center w-full">No users found</p>
+        ) : users?.pages.map((item) =>
+          item?.documents.map((user: Models.Document) => (
+            <UserCard key={user.$id} creator={user} />
+          ))
+        )}
       </div>
 
       {hasNextPage && !searchValue && (
@@ -101,4 +103,4 @@ const Explore = () => {
   )
 }
 
-export default Explore
+export default People
