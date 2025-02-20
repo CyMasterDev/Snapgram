@@ -1,9 +1,6 @@
 import { ID, ImageGravity, Models, Query } from 'appwrite';
-
 import { IEditPost, INewPost, INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from './config';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS } from '../react-query/queryKeys';
 
 export async function createUserAccount(user: INewUser) {
   try {
@@ -158,6 +155,7 @@ export function getFilePreview(fileId: string) {
       2000,
       ImageGravity.Top,
       35,
+      //super duper optimized quality heheheheheheheheheehehehehehehee
     );
 
     if (!fileUrl) throw Error;
@@ -598,11 +596,11 @@ export async function getInfiniteUserPosts({ pageParam, userId }: { pageParam: s
       queries
     );
 
-    if (!userPosts) throw new Error("Failed to fetch user posts.");
+    if (!userPosts) throw Error;
 
     return userPosts;
   } catch (error) {
-    console.error("Error fetching infinite posts:", error);
+    console.log(error);
     throw error;
   }
 }
@@ -633,6 +631,54 @@ export async function getUserLikedPosts(userId: string) {
   } catch (error) {
     console.log(error);
     return [];
+  }
+}
+
+export async function getInfiniteUserLikedPosts({
+  pageParam,
+  userId,
+}: {
+  pageParam?: string;
+  userId: string;
+}) {
+  const limit = 20;
+  let queries: any[] = [Query.orderDesc("$createdAt"), Query.limit(limit)];
+
+  if (pageParam) {
+    queries.push(Query.cursorAfter(pageParam));
+  }
+
+  try {
+    let postsResponse = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.postCollectionId,
+      queries
+    );
+
+    if (!postsResponse || !postsResponse.documents) {
+      throw new Error("Failed to fetch posts.");
+    }
+
+    let posts = postsResponse.documents;
+
+    let likedPosts: any[] = [];
+    for (let post of posts) {
+      if (post.likes?.some((like: any) => like.$id === userId)) {
+        likedPosts.push(post);
+      }
+      if (likedPosts.length >= 12) break;
+    }
+
+    const lastPost = posts[posts.length - 1];
+    const nextPage = lastPost ? lastPost.$id : null;
+
+    return {
+      documents: likedPosts,
+      nextPage: likedPosts.length < 12 ? nextPage : null,
+    };
+  } catch (error) {
+    console.error("Error fetching liked posts:", error);
+    return { documents: [], nextPage: null };
   }
 }
 

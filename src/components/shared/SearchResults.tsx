@@ -11,6 +11,14 @@ type SearchResultsProps = {
 const SearchResults = ({ isSearchFetching, searchedPosts, searchQuery }: SearchResultsProps) => {
   if (!searchQuery && isSearchFetching) return <Spinner />
 
+  if (!searchedPosts) {
+    return (
+      <div className="mt-10 lg:mb-0 md:mb-0 mb-44 flex-center w-full">
+        <Spinner />
+      </div>
+    )
+  }
+
   if (searchedPosts && searchedPosts.documents.length > 0) {
     return (
       <PostGrid posts={searchedPosts.documents} />
@@ -23,7 +31,7 @@ const SearchResults = ({ isSearchFetching, searchedPosts, searchQuery }: SearchR
         {!searchQuery ? <Spinner /> : <p>No results found for "{searchQuery}"</p>}
       </div>
     );
-  }  
+  }
 }
 
 export default SearchResults

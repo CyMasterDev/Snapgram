@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetPostById } from "@/lib/react-query/queriesAndMutations";
 import { useUserContext } from "@/context/AuthContext";
-import { toast } from "@/hooks/use-toast";
 import Spinner from "@/components/shared/Spinner";
 import { PostForm } from "@/components/forms/PostForm";
 

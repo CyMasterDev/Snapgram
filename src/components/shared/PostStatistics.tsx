@@ -1,4 +1,4 @@
-import { useDeleteSavedPost, useDeleteSavesByPostId, useGetCurrentUser, useLikePost, useSavePost } from "@/lib/react-query/queriesAndMutations";
+import { useDeleteSavedPost, useGetCurrentUser, useLikePost, useSavePost } from "@/lib/react-query/queriesAndMutations";
 import { checkIsLiked, formatNumbers } from "@/lib/utils";
 import { Models } from "appwrite"
 import React, { useState, useEffect } from "react";

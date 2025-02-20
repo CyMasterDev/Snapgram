@@ -2,14 +2,29 @@ import PostList from "@/components/shared/PostList";
 import Spinner from "@/components/shared/Spinner";
 import UserCard from "@/components/shared/UserCard";
 import { useUserContext } from "@/context/AuthContext";
-import { useGetRecentPosts, useGetTopFollowedUsers, useGetTopLikedPosts } from "@/lib/react-query/queriesAndMutations";
+import { useGetInfinitePosts, useGetRecentPosts, useGetTopFollowedUsers, useGetTopLikedPosts } from "@/lib/react-query/queriesAndMutations";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 const Home = () => {
-  const { data: posts, isPending: isPostLoading, isError: isErrorPosts } = useGetTopLikedPosts();
-  const { data: creators, isPending: isUserLoading, isError: isErrorUsers } = useGetTopFollowedUsers(10);
+  const { ref, inView } = useInView();
+  const { data: posts, fetchNextPage, hasNextPage } = useGetInfinitePosts();
+  const { data: creators, isPending: isUserLoading } = useGetTopFollowedUsers(10);
   const { user } = useUserContext();
 
-  const postArray = posts ? posts : [];
+  useEffect(() => {
+    if (inView) fetchNextPage();
+  }, [inView])
+
+  if (!posts) {
+    return (
+      <div className="flex-center w-full h-full">
+        <Spinner />
+      </div>
+    )
+  }
+
+  //const postArray = posts ? posts : [];
 
   const filteredCreators = creators?.filter(
     (creator) => creator.$id !== user?.id
@@ -30,10 +45,17 @@ const Home = () => {
             />
             <h2 className='h3-bold md:h2-bold text-left w-full'>Home Feed</h2>
           </div>
-          {isPostLoading ? (
+          {!posts ? (
             <Spinner />
           ) : (
-            <PostList posts={postArray} />
+            posts.pages.map((item, index) => (
+              <PostList key={`page-${index}`} posts={item?.documents} />
+            ))
+          )}
+          {hasNextPage && (
+            <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">
+              <Spinner />
+            </div>
           )}
         </div>
       </div>

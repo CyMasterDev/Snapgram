@@ -11,6 +11,8 @@ export enum QUERY_KEYS {
     GET_INFINITE_USERS = "getInfiniteUsers",
     GET_USER_POSTS = "getUserPosts",
     GET_INFINITE_USER_POSTS = "getInfiniteUserPosts",
+    GET_USER_LIKED_POSTS = "getUserLikedPosts",
+    GET_INFINITE_USER_LIKED_POSTS = "getInfiniteUserLikedPosts",
 
     // POST KEYS
     GET_POSTS = "getPosts",
@@ -18,14 +20,9 @@ export enum QUERY_KEYS {
     GET_RECENT_POSTS = "getRecentPosts",
     GET_TOP_LIKED_POSTS = "getTopLikedPosts",
     GET_POST_BY_ID = "getPostById",
-    GET_USER_LIKED_POSTS = "getUserLikedPosts",
     GET_FILE_PREVIEW = "getFilePreview",
 
     //  SEARCH KEYS
     SEARCH_POSTS = "getSearchPosts",
     SEARCH_USERS = "getSearchUsers",
-
-    //  FOLLOW KEYS
-    GET_FOLLOWERS_COUNT = "getFollowersCount",
-    GET_FOLLOWING_COUNT = "getFollowingCount"
 }

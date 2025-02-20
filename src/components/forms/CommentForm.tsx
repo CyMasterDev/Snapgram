@@ -13,6 +13,7 @@ import { Models } from 'appwrite'
 import { useUserContext } from '@/context/AuthContext'
 import { z } from 'zod'
 import { useCreatePost, useEditPost } from '@/lib/react-query/queriesAndMutations'
+import { toast } from '@/hooks/use-toast'
 
 type CommentFormProps = {
     comment?: Models.Document;
@@ -33,8 +34,8 @@ const CommentForm = ({ comment, action }: CommentFormProps) => {
         },
     });
 
-    async function onSubmit(values: z.infer<typeof PostValidation>) {
-        if (post && action === "Edit") {
+    async function onSubmit(values: z.infer<typeof CommentValidation>) {
+        if (comment && action === "Edit") {
             const editedPost = await editPost({
                 ...values,
                 postId: post.$id,

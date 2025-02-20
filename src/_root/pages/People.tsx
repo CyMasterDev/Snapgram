@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import useDebounce from '@/hooks/useDebounce';
 import { useGetInfiniteUsers, useSearchUsers } from '@/lib/react-query/queriesAndMutations';
 import { Models } from 'appwrite';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useInView } from 'react-intersection-observer';
 
 const People = () => {
@@ -16,7 +16,7 @@ const People = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedSort, setSelectedSort] = useState("All");
 
-  const debouncedValue = useDebounce(searchValue, 300);
+  const debouncedValue = useDebounce(searchValue, 500);
   const { data: searchedUsers, isFetching: isSearchFetching } = useSearchUsers(debouncedValue);
 
   useEffect(() => {
@@ -78,7 +78,6 @@ const People = () => {
         <PostFilter selectedSort={selectedSort} setSelectedSort={setSelectedSort} />
       </div>
 
-      <div className="flex flex-wrap gap-9 w-full max-w-5xl user-grid">
         {shouldShowSearchResults ? (
           <UserSearchResults
             isSearchFetching={isSearchFetching}
@@ -87,12 +86,15 @@ const People = () => {
           />
         ) : shouldShowUsers ? (
           <p className="text-light-4 mt-10 text-center w-full">No users found</p>
-        ) : users?.pages.map((item) =>
-          item?.documents.map((user: Models.Document) => (
-            <UserCard key={user.$id} creator={user} />
-          ))
+        ) : (
+          <div className="flex flex-wrap gap-9 w-full max-w-5xl user-grid">
+            {users?.pages.flatMap((item) =>
+              item?.documents.map((user: Models.Document) => (
+                <UserCard key={user.$id} creator={user} />
+              ))
+            )}
+          </div>
         )}
-      </div>
 
       {hasNextPage && !searchValue && (
         <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">

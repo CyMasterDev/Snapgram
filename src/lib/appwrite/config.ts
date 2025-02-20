@@ -10,6 +10,8 @@ export const appwriteConfig = {
     savesCollectionId: import.meta.env.VITE_APPWRITE_SAVES_COLLECTION_ID,
     commentCollectionId: import.meta.env.VITE_APPWRITE_COMMENT_COLLECTION_ID,
     followersCollectionId: import.meta.env.VITE_APPWRITE_FOLLOWERS_COLLECTION_ID,
+    openAIKey: import.meta.env.OPEN_AI_KEY,
+    // We will use the Open AI Key to implement content moderation...maybe
 };
 
 export const client = new Client();

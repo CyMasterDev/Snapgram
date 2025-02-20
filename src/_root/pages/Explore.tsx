@@ -7,7 +7,6 @@ import { useGetInfinitePosts, useSearchPosts } from "@/lib/react-query/queriesAn
 import useDebounce from "@/hooks/useDebounce";
 import Spinner from "@/components/shared/Spinner";
 import { useInView } from 'react-intersection-observer'
-import PostList from "@/components/shared/PostList";
 
 const Explore = () => {
   const { ref, inView } = useInView();
@@ -16,7 +15,7 @@ const Explore = () => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedSort, setSelectedSort] = useState("All");
 
-  const debouncedValue = useDebounce(searchValue, 300);
+  const debouncedValue = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching } = useSearchPosts(debouncedValue);
 
   useEffect(() => {
@@ -88,7 +87,7 @@ const Explore = () => {
         ) : shouldShowPosts ? (
           <p className="text-light-4 mt-10 text-center w-full">That's all we have! Check back later for more posts!</p>
         ) : posts.pages.map((item, index) => (
-          <PostGrid key={`page-${index}`} posts={item.documents} />
+          <PostGrid key={`page-${index}`} posts={item?.documents} />
         ))}
       </div>
 

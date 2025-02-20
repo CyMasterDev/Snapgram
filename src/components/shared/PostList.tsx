@@ -1,7 +1,5 @@
 import { Models } from "appwrite";
-import { Link } from "react-router-dom";
 import PostCard from "./PostCard";
-import UserCard from "./UserCard";
 
 type PostListProps = {
     posts?: Models.Document[];
@@ -17,7 +15,7 @@ const PostList = ({ posts }: PostListProps) => {
                     ))}
                 </ul>
             ) : (
-                <p className="text-light-4 mt-10 text-center w-full">No posts yet! Start something extraordinary by <Link className="text-primary-500" to="/create-post">creating a new post</Link></p>
+                <p className="text-light-4 mt-10 text-center w-full">That's all we have! Come back later for more posts!</p>
             )}
         </div>
     )

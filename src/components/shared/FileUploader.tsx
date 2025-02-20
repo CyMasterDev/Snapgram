@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { FileWithPath, useDropzone, FileRejection } from "react-dropzone";
 import { Button } from "../ui/button";
 import { X } from "lucide-react"; // Import close icon
+import { toast } from "@/hooks/use-toast";
 
 type FileUploaderProps = {
     fieldChange: (FILES: File[]) => void;
@@ -31,6 +32,7 @@ const FileUploader = ({ fieldChange, mediaUrl }: FileUploaderProps) => {
             const filteredFiles = acceptedFiles.filter(file => !file.name.toLowerCase().endsWith(".svg"));
             if (filteredFiles.length !== acceptedFiles.length) {
                 setErrorMessage("SVG files are currently not supported due to bucket storage issues. Please upload PNG, JPG, or JPEG.");
+                toast
                 return;
             }
 

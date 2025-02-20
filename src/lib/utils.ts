@@ -13,7 +13,7 @@ export function formatDateString(dateString: string) {
   };
 
   const date = new Date(dateString);
-  const formattedDate = date.toLocaleDateString("en-US", options);
+  const formattedDate = date.toLocaleDateString("en-UK", options);
 
   const time = date.toLocaleTimeString([], {
     hour: "numeric",

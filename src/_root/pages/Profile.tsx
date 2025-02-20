@@ -8,7 +8,11 @@ import {
 } from "react-router-dom";
 import Spinner from "@/components/shared/Spinner";
 import { useUserContext } from "@/context/AuthContext";
-import { useGetInfiniteUserPosts, useGetUserById, useGetUserLikedPosts } from "@/lib/react-query/queriesAndMutations";
+import {
+  useGetInfiniteUserPosts,
+  useGetInfiniteUserLikedPosts,
+  useGetUserById,
+} from "@/lib/react-query/queriesAndMutations";
 import PostGrid from "@/components/shared/PostGrid";
 import { formatNumbers } from "@/lib/utils";
 import FollowButton from "@/components/shared/FollowButton";
@@ -37,13 +41,19 @@ const Profile = () => {
   const followers = currentUser?.followers.length || 0;
   const following = currentUser?.following.length || 0;
 
-  const { data: posts, fetchNextPage, hasNextPage } = useGetInfiniteUserPosts(id || "");
+  const { data: posts, isPending: isUserPostsLoading, fetchNextPage: fetchMorePosts, hasNextPage: hasMorePosts } = useGetInfiniteUserPosts(id || "");
+
+  const { data: likedPosts, isPending: isUserLikedPostsLoading, fetchNextPage: fetchMoreLikedPosts, hasNextPage: hasMoreLikedPosts } = useGetInfiniteUserLikedPosts(id || "");
 
   useEffect(() => {
-    if (inView) fetchNextPage();
-  }, [inView, fetchNextPage]);
+    if (!inView) return;
 
-  const { data: likedPosts, isPending: isUserLikedPostsLoading } = useGetUserLikedPosts(id || "");
+    if (pathname.includes("liked-posts") && hasMoreLikedPosts) {
+      fetchMoreLikedPosts();
+    } else if (hasMorePosts) {
+      fetchMorePosts();
+    }
+  }, [inView]);
 
   if (!currentUser)
     return (
@@ -74,7 +84,7 @@ const Profile = () => {
 
             <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
               <StatBlock value={currentUser.posts.length} label="Posts" />
-              <StatBlock value={formatNumbers(followers)} label="Followers" />
+              <StatBlock value={formatNumbers(followers)} label={followers === 1 ? "Follower" : "Followers"} />
               <StatBlock value={formatNumbers(following)} label="Following" />
             </div>
 
@@ -85,21 +95,9 @@ const Profile = () => {
 
           <div className="flex xl:pt-4 lg:pt-4 pt-0 justify-center gap-4">
             {user.id === currentUser.$id ? (
-              <Link
-                to={`/edit-profile/${currentUser.$id}`}
-                className="h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-xl"
-              >
-                <img
-                  src="/assets/icons/edit.svg"
-                  alt="edit"
-                  width={20}
-                  height={20}
-                  draggable="false"
-                  className="select-none"
-                />
-                <p className="flex whitespace-nowrap small-medium">
-                  Edit Profile
-                </p>
+              <Link to={`/edit-profile/${currentUser.$id}`} className="h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-xl">
+                <img src="/assets/icons/edit.svg" alt="edit" width={20} height={20} draggable="false" className="select-none" />
+                <p className="flex whitespace-nowrap small-medium">Edit Profile</p>
               </Link>
             ) : (
               <FollowButton userId={user.id} followingUserId={currentUser.$id} />
@@ -109,32 +107,12 @@ const Profile = () => {
       </div>
 
       <div className="flex max-w-5xl w-full">
-        <Link
-          to={`/profile/${id}`}
-          className={`profile-tab rounded-l-xl ${pathname === `/profile/${id}` ? "!bg-dark-3" : ""}`}
-        >
-          <img
-            src="/assets/icons/posts.svg"
-            alt="posts"
-            width={20}
-            height={20}
-            draggable="false"
-            className="select-none"
-          />
+        <Link to={`/profile/${id}`} className={`profile-tab rounded-l-xl ${pathname === `/profile/${id}` ? "!bg-dark-3" : ""}`}>
+          <img src="/assets/icons/posts.svg" alt="posts" width={20} height={20} draggable="false" className="select-none" />
           Posts
         </Link>
-        <Link
-          to={`/profile/${id}/liked-posts`}
-          className={`profile-tab rounded-r-xl ${pathname === `/profile/${id}/liked-posts` ? "!bg-dark-3" : ""}`}
-        >
-          <img
-            src="/assets/icons/like.svg"
-            alt="like"
-            width={20}
-            height={20}
-            draggable="false"
-            className="select-none"
-          />
+        <Link to={`/profile/${id}/liked-posts`} className={`profile-tab rounded-r-xl ${pathname === `/profile/${id}/liked-posts` ? "!bg-dark-3" : ""}`}>
+          <img src="/assets/icons/like.svg" alt="like" width={20} height={20} draggable="false" className="select-none" />
           Liked Posts
         </Link>
       </div>
@@ -145,11 +123,40 @@ const Profile = () => {
           element={
             <>
               <div className="flex flex-wrap gap-9 w-full max-w-5xl">
-                {posts?.pages.map((item, index) => (
-                  <PostGrid key={`page-${index}`} posts={item.documents} />
-                ))}
+                {posts?.pages.some((item) => item.documents.length > 0) ? (
+                  posts.pages.map((item, index) => (
+                    <PostGrid key={`page-${index}`} posts={item.documents} />
+                  ))
+                ) : !isUserPostsLoading && (
+                  <div className="flex-col items-center text-center w-full mt-10">
+                    <img
+                      src="/assets/icons/file-upload.svg"
+                      alt="posts"
+                      className="mx-auto mb-4 select-none"
+                      draggable="false"
+                      height={100}
+                      width={100}
+                    />
+                    <p className="text-light-3">No posts here yet...</p>
+                    {currentUser.$id === user.id ? (
+                      <p className="text-light-4 text-sm">
+                        Start sharing your thoughts and make this space yours!
+                      </p>
+                    ) : currentUser.$id != user.id && (
+                      <p className="text-light-4 text-sm">
+                        Check back later to see if this user has posted!
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-              {hasNextPage && (
+              {!posts && (
+                <div className="mt-10 lg:mb-0 md:mb-0 mb-44">
+                  <Spinner />
+                </div>
+              )
+              }
+              {hasMorePosts && (
                 <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">
                   <Spinner />
                 </div>
@@ -158,11 +165,52 @@ const Profile = () => {
           }
         />
         <Route
-          path="/liked-posts"
-          element={isUserLikedPostsLoading ? <Spinner /> : <PostGrid posts={likedPosts} />}
+          path="liked-posts"
+          element={
+            <>
+              <div className="flex flex-wrap gap-9 w-full max-w-5xl">
+                {likedPosts?.pages.some((item) => item.documents.length > 0) ? (
+                  likedPosts.pages.map((item, index) => (
+                    <PostGrid key={`liked-page-${index}`} posts={item.documents} />
+                  ))
+                ) : !isUserLikedPostsLoading && (
+                  <div className="flex-col items-center text-center w-full mt-10">
+                    <img
+                      src="/assets/icons/file-upload.svg"
+                      alt="posts"
+                      className="mx-auto mb-4 select-none"
+                      draggable="false"
+                      height={100}
+                      width={100}
+                    />
+                    <p className="text-light-3">No liked posts yet...</p>
+                    {currentUser.$id === user.id ? (
+                      <p className="text-light-4 text-sm">
+                        Find something you love and give it a like!
+                      </p>
+                    ) : (
+                      <p className="text-light-4 text-sm">
+                        It appears this user hasn't liked anything...
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+              {!likedPosts && (
+                <div className="mt-10 lg:mb-0 md:mb-0 mb-44">
+                  <Spinner />
+                </div>
+              )
+              }
+              {hasMoreLikedPosts && (
+                <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">
+                  <Spinner />
+                </div>
+              )}
+            </>
+          }
         />
       </Routes>
-
       <Outlet />
     </div>
   );

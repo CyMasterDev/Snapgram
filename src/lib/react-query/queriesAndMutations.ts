@@ -4,7 +4,7 @@ import {
     useQueryClient,
     useInfiniteQuery,
 } from '@tanstack/react-query'
-import { createPost, createUserAccount, deletePost, deleteSavedPost, deleteSavesByPostId, editPost, followUser, getCurrentUser, getFollowersCount, getFollowingCount, getInfinitePosts, getInfiniteUserPosts, getInfiniteUsers, getPostById, getRecentPosts, getRecentUsers, getTopFollowedUsers, getTopLikedPosts, getTopPostedUsers, getUserById, getUserLikedPosts, getUserPosts, getUserWithFollowCounts, likePost, savePost, searchPosts, searchUsers, signInAccount, signOutAccount, unfollowUser } from '../appwrite/api'
+import { createPost, createUserAccount, deletePost, deleteSavedPost, deleteSavesByPostId, editPost, followUser, getCurrentUser, getInfinitePosts, getInfiniteUserLikedPosts, getInfiniteUserPosts, getInfiniteUsers, getPostById, getRecentPosts, getRecentUsers, getTopFollowedUsers, getTopLikedPosts, getTopPostedUsers, getUserById, getUserLikedPosts, getUserPosts, getUserWithFollowCounts, likePost, savePost, searchPosts, searchUsers, signInAccount, signOutAccount, unfollowUser } from '../appwrite/api'
 import { IEditPost, INewPost, INewUser } from '@/types'
 import { QUERY_KEYS } from './queryKeys'
 
@@ -92,6 +92,9 @@ export const useLikePost = () => {
             })
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_USER_LIKED_POSTS]
+            })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_INFINITE_USER_LIKED_POSTS]
             })
         }
     })
@@ -194,6 +197,9 @@ export const useDeletePost = () => {
             queryClient.invalidateQueries({
                 queryKey: [QUERY_KEYS.GET_INFINITE_USER_POSTS]
             })
+            queryClient.invalidateQueries({
+                queryKey: [QUERY_KEYS.GET_INFINITE_USER_LIKED_POSTS]
+            })
         }
     })
 }
@@ -275,6 +281,20 @@ export const useGetUserPosts = (userId: string) => {
     });
 };
 
+export const useGetInfiniteUserPosts = (userId: string) => {
+    return useInfiniteQuery({
+        queryKey: [QUERY_KEYS.GET_INFINITE_USER_POSTS, userId],
+        queryFn: ({ pageParam = "" }) => getInfiniteUserPosts({ pageParam, userId }), 
+        initialPageParam: "",
+        getNextPageParam: (lastPage) => {
+            if (!lastPage || lastPage.documents.length === 0) return null;
+
+            const lastId = lastPage.documents[lastPage.documents.length - 1].$id;
+            return lastId;
+        },
+    });
+};
+
 export const useGetUserLikedPosts = (userId: string) => {
     return useQuery({
         queryKey: [QUERY_KEYS.GET_USER_LIKED_POSTS, userId],
@@ -283,10 +303,10 @@ export const useGetUserLikedPosts = (userId: string) => {
     });
 };
 
-export const useGetInfiniteUserPosts = (userId: string) => {
+export const useGetInfiniteUserLikedPosts = (userId: string) => {
     return useInfiniteQuery({
-        queryKey: [QUERY_KEYS.GET_INFINITE_USER_POSTS, userId],
-        queryFn: ({ pageParam = "" }) => getInfiniteUserPosts({ pageParam, userId }), 
+        queryKey: [QUERY_KEYS.GET_INFINITE_USER_LIKED_POSTS, userId],
+        queryFn: ({ pageParam = "" }) => getInfiniteUserLikedPosts({ pageParam, userId }), 
         initialPageParam: "",
         getNextPageParam: (lastPage) => {
             if (!lastPage || lastPage.documents.length === 0) return null;

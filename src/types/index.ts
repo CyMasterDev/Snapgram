@@ -59,7 +59,6 @@ export type IContextType = {
   export type INewComment = {
     userId: string;
     content: string;
-    postId: string;
     parentCommentId?: string; //optional
   }
 
