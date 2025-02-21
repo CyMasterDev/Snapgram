@@ -3,7 +3,7 @@
 (Currently under development, not completed)
 
 > [!IMPORTANT]
-> If you want to run this on your own machine, you will need to create an .env file. You will also need an appwrite account with the database completely setup. You CANNOT run Snapgran without an appwrite database. Necessary database and configuration to run will be added soon.
+> If you want to run this on your own machine, you will need to create an .env file with your key, database IDs, and collection IDs etc. You will also need an appwrite account with the database completely setup. You CANNOT run Snapgran without an appwrite database. A full guide on setup will be added soon.
 
 - Sign up page completed
 - Sign in page completed
