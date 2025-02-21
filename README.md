@@ -2,6 +2,8 @@
 
 (Currently under development, not completed)
 
+If you want to run this on your own machine, you will need to create an .env file. You will also need an appwrite account with the database completely setup. Necessary database and configuration to run will be added soon.
+
 - Sign up page completed
 - Sign in page completed
 - Add api to appwrite database functionality
@@ -16,3 +18,5 @@
 - People page (users) with infinite scroll and searchbar to search by username and name and usercards that display profile picture, username, name and follow button
 - Profile Page with profile picture, name, username, edit profile button (if it is your profile), working follow button component, post count, followers count, following count, posts tab (with infinite scroll) and liked posts tab (working on infinite scroll for liked posts tab)
 - toast styling
+- Edit profile page completed
+- Saved page completed
