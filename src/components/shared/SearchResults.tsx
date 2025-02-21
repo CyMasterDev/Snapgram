@@ -13,7 +13,7 @@ const SearchResults = ({ isSearchFetching, searchedPosts, searchQuery }: SearchR
 
   if (!searchedPosts) {
     return (
-      <div className="mt-10 lg:mb-0 md:mb-0 mb-44 flex-center w-full">
+      <div className="lg:mb-0 md:mb-0 mb-44 flex-center w-full">
         <Spinner />
       </div>
     )
@@ -27,8 +27,8 @@ const SearchResults = ({ isSearchFetching, searchedPosts, searchQuery }: SearchR
 
   if ((!searchedPosts || searchedPosts.documents.length === 0) && !isSearchFetching) {
     return (
-      <div className="text-light-4 mt-10 text-center w-full">
-        {!searchQuery ? <Spinner /> : <p>No results found for "{searchQuery}"</p>}
+      <div className="text-light-4 text-center w-full">
+        {!searchQuery ? <Spinner /> : <p>No posts found for "{searchQuery}"</p>}
       </div>
     );
   }

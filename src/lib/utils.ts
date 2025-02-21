@@ -96,3 +96,5 @@ export function formatNumbers(likes: number): string {
 function removeTrailingDecimal(value: string): string {
   return value.replace(/\.0$/, "");
 }
+
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file);

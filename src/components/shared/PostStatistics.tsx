@@ -81,7 +81,7 @@ const PostStatistics = ({ post, userId }: PostStatisticsProps) => {
                         height={20}
                         onClick={() => { }}
                     />
-                    <p className="small-medium lg:base-medium line-clamp-1">!done</p>
+                    <p className="small-medium lg:base-medium line-clamp-1">TODO</p>
                 </div>
             </div>
             {isSavingPost || isDeletingSavedPost ? <div className="flex gap-2 ml-auto"><Spinner width={20} height={20} /></div> : <div className="flex gap-2 ml-auto">

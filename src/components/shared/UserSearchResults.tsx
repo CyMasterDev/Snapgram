@@ -1,6 +1,7 @@
 import { Models } from "appwrite";
 import Spinner from "./Spinner";
 import UserCard from "./UserCard";
+import { useUserContext } from "@/context/AuthContext";
 
 type UserSearchResultsProps = {
     isSearchFetching: boolean;
@@ -9,6 +10,7 @@ type UserSearchResultsProps = {
 };
 
 const UserSearchResults = ({ isSearchFetching, searchedUsers, searchQuery }: UserSearchResultsProps) => {
+
     if (!searchQuery && isSearchFetching) return <Spinner />;
 
     if (searchedUsers && searchedUsers.length > 0) {
@@ -23,8 +25,8 @@ const UserSearchResults = ({ isSearchFetching, searchedUsers, searchQuery }: Use
 
     if ((!searchedUsers || searchedUsers.length === 0) && !isSearchFetching) {
         return (
-            <div className="text-light-4 mt-10 text-center w-full">
-                {!searchQuery ? <Spinner /> : <p className="text-light-4 mt-10 text-center w-full">No results found for "{searchQuery}"</p>}
+            <div className="text-light-4 text-center w-full">
+                {!searchQuery ? <Spinner /> : <p>No users found for "{searchQuery}"</p>}
             </div>
         );
     }

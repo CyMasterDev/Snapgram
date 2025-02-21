@@ -3,6 +3,7 @@ import Spinner from '@/components/shared/Spinner';
 import UserCard from '@/components/shared/UserCard';
 import UserSearchResults from '@/components/shared/UserSearchResults';
 import { Input } from '@/components/ui/input'
+import { useUserContext } from '@/context/AuthContext';
 import useDebounce from '@/hooks/useDebounce';
 import { useGetInfiniteUsers, useSearchUsers } from '@/lib/react-query/queriesAndMutations';
 import { Models } from 'appwrite';
@@ -12,6 +13,7 @@ import { useInView } from 'react-intersection-observer';
 const People = () => {
   const { ref, inView } = useInView();
   const { data: users, fetchNextPage, hasNextPage } = useGetInfiniteUsers();
+  const { user } = useUserContext(); // Get the current user
 
   const [searchValue, setSearchValue] = useState('');
   const [selectedSort, setSelectedSort] = useState("All");
@@ -78,23 +80,25 @@ const People = () => {
         <PostFilter selectedSort={selectedSort} setSelectedSort={setSelectedSort} />
       </div>
 
-        {shouldShowSearchResults ? (
-          <UserSearchResults
-            isSearchFetching={isSearchFetching}
-            searchedUsers={searchedUsers}
-            searchQuery={debouncedValue}
-          />
-        ) : shouldShowUsers ? (
-          <p className="text-light-4 mt-10 text-center w-full">No users found</p>
-        ) : (
-          <div className="flex flex-wrap gap-9 w-full max-w-5xl user-grid">
-            {users?.pages.flatMap((item) =>
-              item?.documents.map((user: Models.Document) => (
+      {shouldShowSearchResults ? (
+        <UserSearchResults
+          isSearchFetching={isSearchFetching}
+          searchedUsers={searchedUsers}
+          searchQuery={debouncedValue}
+        />
+      ) : shouldShowUsers ? (
+        <p className="text-light-4 mt-10 text-center w-full">No users found</p>
+      ) : (
+        <div className="flex flex-wrap gap-9 w-full max-w-5xl user-grid">
+          {users?.pages.flatMap((item) =>
+            item?.documents
+              .filter((otherUser: Models.Document) => otherUser.$id !== user.id) // Exclude current user
+              .map((user: Models.Document) => (
                 <UserCard key={user.$id} creator={user} />
               ))
-            )}
-          </div>
-        )}
+          )}
+        </div>
+      )}
 
       {hasNextPage && !searchValue && (
         <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">

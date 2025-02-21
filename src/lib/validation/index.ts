@@ -37,6 +37,14 @@ export const SigninValidation = z.object({
   password: z.string().min(1, { message: "Please enter your password, this field is required" }),
 });
 
+export const ProfileValidation = z.object({
+  file: z.custom<File[]>().refine((files) => files?.every((file) => file.size <= MAX_FILE_SIZE), { message: "File must be 5MB or smaller" }),
+  name: z.string().min(3, { message: "Name is too short, please enter at least 3 characters" }).max(30, { message: "Name is too long, please enter a max of 30 characters" }).regex(/^[A-Za-z\s]+$/, { message: "Name can only contain letters and spaces" }),
+  username: z.string().min(3, { message: "Username is too short, please enter at least 3 characters" }).max(30, { message: "Username is too long, please enter a max of 30 characters" }).regex(/^[a-z0-9_-]+$/, { message: "Username can only contain lowercase letters, numbers, dashes, and underscores" }),
+  email: z.string().email().min(8, { message: "Please enter your email, this field is required" }),
+  bio: z.string().max(150, { message: "Name is too long, please enter a max of 30 characters" }),
+});
+
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 export const PostValidation = z.object({

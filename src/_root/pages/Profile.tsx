@@ -17,7 +17,7 @@ import PostGrid from "@/components/shared/PostGrid";
 import { formatNumbers } from "@/lib/utils";
 import FollowButton from "@/components/shared/FollowButton";
 import { useInView } from "react-intersection-observer";
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 
 interface StatBlockProps {
   value: string | number;
@@ -32,28 +32,49 @@ const StatBlock = ({ value, label }: StatBlockProps) => (
 );
 
 const Profile = () => {
-  const { ref, inView } = useInView();
+  const { ref, inView } = useInView({ threshold: 0.1 });
   const { id } = useParams();
   const { user } = useUserContext();
   const { pathname } = useLocation();
   const { data: currentUser } = useGetUserById(id || "");
 
-  const followers = currentUser?.followers.length || 0;
-  const following = currentUser?.following.length || 0;
+  const followers = currentUser?.followers?.length || 0;
+  const following = currentUser?.following?.length || 0;
 
-  const { data: posts, isPending: isUserPostsLoading, fetchNextPage: fetchMorePosts, hasNextPage: hasMorePosts } = useGetInfiniteUserPosts(id || "");
+  const {
+    data: posts,
+    isPending: isUserPostsLoading,
+    fetchNextPage: fetchMorePosts,
+    hasNextPage: hasMorePosts,
+  } = useGetInfiniteUserPosts(id || "" );
 
-  const { data: likedPosts, isPending: isUserLikedPostsLoading, fetchNextPage: fetchMoreLikedPosts, hasNextPage: hasMoreLikedPosts } = useGetInfiniteUserLikedPosts(id || "");
+  const {
+    data: likedPosts,
+    isPending: isUserLikedPostsLoading,
+    fetchNextPage: fetchMoreLikedPosts,
+    hasNextPage: hasMoreLikedPosts,
+  } = useGetInfiniteUserLikedPosts(id || "" );
+
+  const loadMore = useCallback(() => {
+    if (pathname === `/profile/${id}` && hasMorePosts) {
+      fetchMorePosts();
+    } else if (pathname === `/profile/${id}/liked-posts` && hasMoreLikedPosts) {
+      fetchMoreLikedPosts();
+    }
+  }, [
+    pathname,
+    id,
+    hasMorePosts,
+    hasMoreLikedPosts,
+    fetchMorePosts,
+    fetchMoreLikedPosts,
+  ]);
 
   useEffect(() => {
-    if (!inView) return;
-
-    if (pathname.includes("liked-posts") && hasMoreLikedPosts) {
-      fetchMoreLikedPosts();
-    } else if (hasMorePosts) {
-      fetchMorePosts();
+    if (inView) {
+      loadMore();
     }
-  }, [inView]);
+  }, [inView, loadMore]);
 
   if (!currentUser)
     return (
@@ -81,22 +102,32 @@ const Profile = () => {
                 @{currentUser.username}
               </p>
             </div>
-
             <div className="flex gap-8 mt-10 items-center justify-center xl:justify-start flex-wrap z-20">
-              <StatBlock value={currentUser.posts.length} label="Posts" />
-              <StatBlock value={formatNumbers(followers)} label={followers === 1 ? "Follower" : "Followers"} />
+              <StatBlock value={currentUser.posts?.length || 0} label="Posts" />
+              <StatBlock
+                value={formatNumbers(followers)}
+                label={followers === 1 ? "Follower" : "Followers"}
+              />
               <StatBlock value={formatNumbers(following)} label="Following" />
             </div>
-
             <p className="small-medium md:base-medium text-center xl:text-left mt-7 max-w-screen-sm">
               {currentUser.bio}
             </p>
           </div>
-
           <div className="flex xl:pt-4 lg:pt-4 pt-0 justify-center gap-4">
             {user.id === currentUser.$id ? (
-              <Link to={`/edit-profile/${currentUser.$id}`} className="h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-xl">
-                <img src="/assets/icons/edit.svg" alt="edit" width={20} height={20} draggable="false" className="select-none" />
+              <Link
+                to={`/edit-profile/${currentUser.$id}`}
+                className="h-12 bg-dark-4 px-5 text-light-1 flex-center gap-2 rounded-xl"
+              >
+                <img
+                  src="/assets/icons/edit.svg"
+                  alt="edit"
+                  width={20}
+                  height={20}
+                  draggable="false"
+                  className="select-none"
+                />
                 <p className="flex whitespace-nowrap small-medium">Edit Profile</p>
               </Link>
             ) : (
@@ -107,27 +138,51 @@ const Profile = () => {
       </div>
 
       <div className="flex max-w-5xl w-full">
-        <Link to={`/profile/${id}`} className={`profile-tab rounded-l-xl ${pathname === `/profile/${id}` ? "!bg-dark-3" : ""}`}>
-          <img src="/assets/icons/posts.svg" alt="posts" width={20} height={20} draggable="false" className="select-none" />
+        <Link
+          to={`/profile/${id}`}
+          className={`profile-tab rounded-l-xl ${
+            pathname === `/profile/${id}` ? "!bg-dark-3" : ""
+          }`}
+        >
+          <img
+            src="/assets/icons/posts.svg"
+            alt="posts"
+            width={20}
+            height={20}
+            draggable="false"
+            className="select-none"
+          />
           Posts
         </Link>
-        <Link to={`/profile/${id}/liked-posts`} className={`profile-tab rounded-r-xl ${pathname === `/profile/${id}/liked-posts` ? "!bg-dark-3" : ""}`}>
-          <img src="/assets/icons/like.svg" alt="like" width={20} height={20} draggable="false" className="select-none" />
+        <Link
+          to={`/profile/${id}/liked-posts`}
+          className={`profile-tab rounded-r-xl ${
+            pathname === `/profile/${id}/liked-posts` ? "!bg-dark-3" : ""
+          }`}
+        >
+          <img
+            src="/assets/icons/like.svg"
+            alt="like"
+            width={20}
+            height={20}
+            draggable="false"
+            className="select-none"
+          />
           Liked Posts
         </Link>
       </div>
 
-      <Routes>
+      <Routes key={pathname}>
         <Route
           index
           element={
             <>
               <div className="flex flex-wrap gap-9 w-full max-w-5xl">
-                {posts?.pages.some((item) => item.documents.length > 0) ? (
-                  posts.pages.map((item, index) => (
-                    <PostGrid key={`page-${index}`} posts={item.documents} />
+                {posts && posts.pages.some((page) => page.documents.length > 0) ? (
+                  posts.pages.map((page, idx) => (
+                    <PostGrid key={`page-${idx}`} posts={page.documents} />
                   ))
-                ) : !isUserPostsLoading && (
+                ) : !isUserPostsLoading ? (
                   <div className="flex-col items-center text-center w-full mt-10">
                     <img
                       src="/assets/icons/file-upload.svg"
@@ -137,25 +192,24 @@ const Profile = () => {
                       height={100}
                       width={100}
                     />
-                    <p className="text-light-3">No posts here yet...</p>
+                    <p className="text-light-3 base-medium">No posts here yet...</p>
                     {currentUser.$id === user.id ? (
-                      <p className="text-light-4 text-sm">
+                      <p className="text-light-4 small-regular">
                         Start sharing your thoughts and make this space yours!
                       </p>
-                    ) : currentUser.$id != user.id && (
-                      <p className="text-light-4 text-sm">
+                    ) : (
+                      <p className="text-light-4 small-regular">
                         Check back later to see if this user has posted!
                       </p>
                     )}
                   </div>
-                )}
+                ) : null}
               </div>
-              {!posts && (
+              {isUserPostsLoading && (
                 <div className="mt-10 lg:mb-0 md:mb-0 mb-44">
                   <Spinner />
                 </div>
-              )
-              }
+              )}
               {hasMorePosts && (
                 <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">
                   <Spinner />
@@ -164,16 +218,18 @@ const Profile = () => {
             </>
           }
         />
+
+        {/* Liked Posts Tab */}
         <Route
           path="liked-posts"
           element={
             <>
               <div className="flex flex-wrap gap-9 w-full max-w-5xl">
-                {likedPosts?.pages.some((item) => item.documents.length > 0) ? (
-                  likedPosts.pages.map((item, index) => (
-                    <PostGrid key={`liked-page-${index}`} posts={item.documents} />
+                {likedPosts && likedPosts.pages.some((page) => page.documents.length > 0) ? (
+                  likedPosts.pages.map((page, idx) => (
+                    <PostGrid key={`liked-page-${idx}`} posts={page.documents} />
                   ))
-                ) : !isUserLikedPostsLoading && (
+                ) : !isUserLikedPostsLoading ? (
                   <div className="flex-col items-center text-center w-full mt-10">
                     <img
                       src="/assets/icons/file-upload.svg"
@@ -183,25 +239,24 @@ const Profile = () => {
                       height={100}
                       width={100}
                     />
-                    <p className="text-light-3">No liked posts yet...</p>
+                    <p className="text-light-3 base-medium">No liked posts yet...</p>
                     {currentUser.$id === user.id ? (
-                      <p className="text-light-4 text-sm">
+                      <p className="text-light-4 small-regular">
                         Find something you love and give it a like!
                       </p>
                     ) : (
-                      <p className="text-light-4 text-sm">
+                      <p className="text-light-4 small-regular">
                         It appears this user hasn't liked anything...
                       </p>
                     )}
                   </div>
-                )}
+                ) : null}
               </div>
-              {!likedPosts && (
+              {isUserLikedPostsLoading && (
                 <div className="mt-10 lg:mb-0 md:mb-0 mb-44">
                   <Spinner />
                 </div>
-              )
-              }
+              )}
               {hasMoreLikedPosts && (
                 <div ref={ref} className="mt-10 lg:mb-0 md:mb-0 mb-44">
                   <Spinner />
@@ -211,6 +266,7 @@ const Profile = () => {
           }
         />
       </Routes>
+
       <Outlet />
     </div>
   );

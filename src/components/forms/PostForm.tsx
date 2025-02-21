@@ -50,10 +50,14 @@ export const PostForm = ({ post, action }: PostFormProps) => {
   async function onSubmit(values: z.infer<typeof PostValidation>) {
     if (post && action === "Edit") {
       const editedPost = await editPost({
-        ...values,
-        postId: post.$id,
-        imageId: post?.imageId,
-        imageUrl: post?.imageUrl,
+        post: {
+          ...values,
+          postId: post.$id,
+          imageId: post?.imageId,
+          imageUrl: post?.imageUrl,
+        },
+        currentUserId: user.id, // Assuming `user` is the logged-in user from context
+        postCreatorId: post.creator.$id, // The ID of the post being edited
       });
 
       // Redirect if the current user is not the creator when editing for additional security (extra one onSubmit just to make sure)

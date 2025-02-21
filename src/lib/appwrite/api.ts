@@ -1,5 +1,5 @@
 import { ID, ImageGravity, Models, Query } from 'appwrite';
-import { IEditPost, INewPost, INewUser } from "@/types";
+import { IEditPost, IEditUser, INewPost, INewUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from './config';
 
 export async function createUserAccount(user: INewUser) {
@@ -151,10 +151,10 @@ export function getFilePreview(fileId: string) {
     const fileUrl = storage.getFilePreview(
       appwriteConfig.storageId,
       fileId,
-      2000,
-      2000,
+      1080,
+      1080,
       ImageGravity.Top,
-      35,
+      25,
       //super duper optimized quality heheheheheheheheheehehehehehehee
     );
 
@@ -171,48 +171,6 @@ export async function deleteFile(fileId: string) {
     await storage.deleteFile(appwriteConfig.storageId, fileId);
 
     return { status: 'OK' }
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function getRecentPosts() {
-  const posts = await databases.listDocuments(
-    appwriteConfig.databaseId,
-    appwriteConfig.postCollectionId,
-    [Query.orderDesc('$createdAt'), Query.limit(10)]
-  )
-
-  if (!posts) throw Error;
-
-  return posts;
-}
-
-export async function getTopLikedPosts() {
-  const postQueries: any[] = [Query.orderDesc("$createdAt"), Query.limit(10)];
-
-  try {
-    const postsResponse = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
-      postQueries
-    );
-
-    if (!postsResponse || !postsResponse.documents) {
-      throw Error
-    }
-
-    const posts = postsResponse.documents;
-
-    const postsWithLikeCounts = posts.map((post: any) => {
-      const likedArray = post.likes;
-      const likeCount = Array.isArray(likedArray) ? likedArray.length : 0;
-      return { ...post, likeCount };
-    });
-
-    postsWithLikeCounts.sort((a, b) => b.likeCount - a.likeCount);
-
-    return postsWithLikeCounts;
   } catch (error) {
     console.log(error);
   }
@@ -287,8 +245,12 @@ export async function getPostById(postId: string) {
   }
 }
 
-export async function editPost(post: IEditPost) {
+export async function editPost({ post, currentUserId, postCreatorId }: { post: IEditPost, currentUserId: string, postCreatorId: string }) {
   const hasFileToUpdate = post.file.length > 0;
+
+  if (!currentUserId || currentUserId !== postCreatorId) {
+    throw Error("Unauthorized to edit this post");
+  }
 
   try {
     let image = {
@@ -450,73 +412,6 @@ export async function searchPosts(searchQuery: string) {
   }
 }
 
-export async function getRecentUsers(limit?: number) {
-  const queries: any[] = [Query.orderDesc("$createdAt")];
-
-  if (limit) {
-    queries.push(Query.limit(limit));
-  }
-
-  try {
-    const users = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      queries
-    )
-
-    if (!users) throw Error;
-
-    return users;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function getTopPostedUsers(limit?: number) {
-  const userQueries: any[] = [Query.orderDesc("$createdAt")];
-  if (limit) {
-    userQueries.push(Query.limit(limit));
-  }
-
-  try {
-    // Fetch recent users from the user collection
-    const usersResponse = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.userCollectionId,
-      userQueries
-    );
-
-    if (!usersResponse || !usersResponse.documents) {
-      throw Error;
-    }
-
-    const users = usersResponse.documents;
-
-    // For each user, fetch posts from the posts collection
-    const usersWithPostCounts = await Promise.all(
-      users.map(async (user: any) => {
-        const postsResponse = await databases.listDocuments(
-          appwriteConfig.databaseId,
-          appwriteConfig.postCollectionId,
-          [Query.equal("creator", user.$id)]
-        );
-
-        // Calculate the post count (using .length, or use postsResponse.total if available)
-        const postCount = postsResponse.documents.length;
-        return { ...user, postCount };
-      })
-    );
-
-    // Sort users by post count in descending order
-    usersWithPostCounts.sort((a, b) => b.postCount - a.postCount);
-
-    return usersWithPostCounts;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
 export async function getTopFollowedUsers(limit?: number) {
   const userQueries: any[] = [Query.orderDesc("$createdAt")];
   if (limit) {
@@ -562,22 +457,6 @@ export async function getUserById(userId: string) {
   }
 }
 
-export async function getUserPosts(userId: string) {
-  try {
-    const userPosts = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
-      [Query.equal("creator", userId)]
-    );
-
-    if (!userPosts) throw Error;
-
-    return userPosts;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export async function getInfiniteUserPosts({ pageParam, userId }: { pageParam: string, userId: string }) {
   const queries: any[] = [
     Query.equal("creator", userId),
@@ -602,35 +481,6 @@ export async function getInfiniteUserPosts({ pageParam, userId }: { pageParam: s
   } catch (error) {
     console.log(error);
     throw error;
-  }
-}
-
-export async function getUserLikedPosts(userId: string) {
-  const queries: any[] = [Query.orderDesc("$createdAt")];
-
-  try {
-    const postsResponse = await databases.listDocuments(
-      appwriteConfig.databaseId,
-      appwriteConfig.postCollectionId,
-      queries
-    );
-
-    if (!postsResponse || !postsResponse.documents) {
-      throw Error;
-    }
-
-    const posts = postsResponse.documents;
-
-    const userLikedPosts = posts.filter((post: any) => {
-      return post.likes?.some((like: any) => {
-        return like.$id === userId;
-      });
-    });
-
-    return userLikedPosts;
-  } catch (error) {
-    console.log(error);
-    return [];
   }
 }
 
@@ -769,6 +619,67 @@ export async function unfollowUser(followRecordId: string) {
     if (!statusCode) throw Error;
 
     return { status: "OK" }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function editUser({userToEdit, currentUserId}: {userToEdit: IEditUser, currentUserId: string}) {
+  const hasFileToUpdate = userToEdit.file.length > 0;
+
+  if (!currentUserId || currentUserId !== userToEdit.userId) {
+    throw Error("Unauthorized to edit this profile");
+  }
+
+  try {
+    let image = {
+      imageUrl: userToEdit.imageUrl,
+      imageId: userToEdit.imageId,
+    };
+
+    if (hasFileToUpdate) {
+      // Upload new file to appwrite storage
+      const uploadedFile = await uploadFile(userToEdit.file[0]);
+      if (!uploadedFile) throw Error;
+
+      // Get new file url
+      const fileUrl = getFilePreview(uploadedFile.$id);
+      if (!fileUrl) {
+        await deleteFile(uploadedFile.$id);
+        throw Error;
+      }
+
+      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+    }
+
+    const editedUser = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      userToEdit.userId,
+      {
+        name: userToEdit.name,
+        bio: userToEdit.bio,
+        imageUrl: image.imageUrl,
+        imageId: image.imageId,
+      }
+    );
+
+    // Failed to update
+    if (!editedUser) {
+      // Delete new file that has been recently uploaded
+      if (hasFileToUpdate) {
+        await deleteFile(image.imageId);
+      }
+      // If no new file uploaded, just throw error
+      throw Error;
+    }
+
+    // Safely delete old file after successful update
+    if (userToEdit.imageId && hasFileToUpdate) {
+      await deleteFile(userToEdit.imageId);
+    }
+
+    return editedUser;
   } catch (error) {
     console.log(error);
   }
